@@ -11,8 +11,8 @@ GameController::GameController() {
 
 }
 
-void GameController::setMapDrawer(MapDrawer *_mapDrawer){
-    mapDrawer = _mapDrawer;
+void GameController::changeSquareHeight(DataTypes::Direction direction){
+    map->changeSquareHeight(direction);
 }
 
 void GameController::increaseZoom(){
@@ -31,10 +31,14 @@ void GameController::rotateRight() {
     map->rotateRight();
 }
 
-void GameController::setMap(Map *_map) {
-    map = _map;
-}
-
 void GameController::moveMapSelection(DataTypes::Direction direction) {
     map->moveSelectedSquare(direction);
+}
+
+void GameController::setMapDrawer(MapDrawer *_mapDrawer){
+    mapDrawer = _mapDrawer;
+}
+
+void GameController::setMap(Map *_map) {
+    map = _map;
 }

@@ -28,6 +28,8 @@ public:
     void rotateRight();
     void increaseZoom();
     void decreaseZoom();
+
+    void changeSquareHeight(DataTypes::Direction direction);
 };
 
 

@@ -25,16 +25,18 @@ public:
 
     std::vector<std::vector<MapSquare*>> mapSquares;
 
-
     Map() = default;
     Map(int aMapSizeX, int aMapSizeY);
 
     void rotateLeft();
     void rotateRight();
     void moveSelectedSquare(DataTypes::Direction direction);
+    void changeSquareHeight(DataTypes::Direction direction);
 
 private:
     int createRandomHeight(int lowerBound, int upperBound);
+
+    void setSurroundingCoordinateHeights(int centralSquareX, int centralSquareY, int newHeight);
 };
 
 

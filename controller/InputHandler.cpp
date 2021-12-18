@@ -45,16 +45,22 @@ void InputHandler::handleKeyboardEvent(SDL_KeyboardEvent &event) {
     if(event.type ==  SDL_KEYDOWN){
         SDL_Keysym key = event.keysym;
         if(key.scancode == SDL_SCANCODE_LEFT){
-            gameController->moveMapSelection(DataTypes::Direction::LEFT);
+            gameController->moveMapSelection(DataTypes::LEFT);
         }
         else if(key.scancode == SDL_SCANCODE_RIGHT){
-            gameController->moveMapSelection(DataTypes::Direction::RIGHT);
+            gameController->moveMapSelection(DataTypes::RIGHT);
         }
         else if(key.scancode == SDL_SCANCODE_DOWN){
-            gameController->moveMapSelection(DataTypes::Direction::DOWN);
+            gameController->moveMapSelection(DataTypes::DOWN);
         }
         else if(key.scancode == SDL_SCANCODE_UP){
-            gameController->moveMapSelection(DataTypes::Direction::UP);
+            gameController->moveMapSelection(DataTypes::UP);
+        }
+        else if(key.scancode == SDL_SCANCODE_SPACE){
+            gameController->changeSquareHeight(DataTypes::UP);
+        }
+        else if(key.scancode == SDL_SCANCODE_LCTRL){
+            gameController->changeSquareHeight(DataTypes::DOWN);
         }
     }
 }

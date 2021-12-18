@@ -12,14 +12,13 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     mapSizeX = aMapSizeX;
     mapSizeY = aMapSizeY;
 
-
     for (int i = 0; i < mapSizeX; ++i) {
         vector<MapSquare*> row;
         for (int j = 0; j < mapSizeY; ++j) {
-            Coordinate *nw = new Coordinate( i, j, createRandomHeight(0,20));
-            Coordinate *ne = new Coordinate( i + 1, j, createRandomHeight(0,20));
-            Coordinate *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,20));
-            Coordinate *sw = new Coordinate( i, j + 1, createRandomHeight(0,20));
+            Coordinate *nw = new Coordinate( i, j, createRandomHeight(0,0));
+            Coordinate *ne = new Coordinate( i + 1, j, createRandomHeight(0,0));
+            Coordinate *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,0));
+            Coordinate *sw = new Coordinate( i, j + 1, createRandomHeight(0,0));
             MapSquare *square =  new MapSquare(*ne, *nw, *se, *sw);
             row.push_back(square);
         }
@@ -75,6 +74,53 @@ void Map::rotateLeft() {
     rotationAngle = rotationAngle_degrees * (3.14159 / 180);
 }
 
+void Map::changeSquareHeight(DataTypes::Direction direction){
+    int change = (direction == DataTypes::UP) ? 3 : -3;
+    int newHeightNW = mapSquares[selectedSquareX][selectedSquareY]->northWestCorner.z + change;
+    int newHeightNE = mapSquares[selectedSquareX][selectedSquareY]->northEastCorner.z + change;
+    int newHeightSW = mapSquares[selectedSquareX][selectedSquareY]->southWestCorner.z + change;
+    int newHeightSE = mapSquares[selectedSquareX][selectedSquareY]->southEastCorner.z + change;
+
+    mapSquares[selectedSquareX][selectedSquareY]->northWestCorner.z = newHeightNW;
+    mapSquares[selectedSquareX][selectedSquareY]->northEastCorner.z = newHeightNE;
+    mapSquares[selectedSquareX][selectedSquareY]->southWestCorner.z = newHeightSW;
+    mapSquares[selectedSquareX][selectedSquareY]->southEastCorner.z = newHeightSE;
+
+    if(selectedSquareX - 1 >= 0){
+        mapSquares[selectedSquareX - 1][selectedSquareY]->northEastCorner.z = newHeightNW;
+        mapSquares[selectedSquareX - 1][selectedSquareY]->southEastCorner.z = newHeightSW;
+        if(selectedSquareY - 1 >= 0){
+            mapSquares[selectedSquareX - 1][selectedSquareY - 1]->southEastCorner.z = newHeightNW;
+        }
+        if(selectedSquareY + 1 < mapSizeY){
+            mapSquares[selectedSquareX - 1][selectedSquareY + 1]->northEastCorner.z = newHeightSW;
+        }
+    }
+    if(selectedSquareX + 1 < mapSizeX){
+        mapSquares[selectedSquareX + 1][selectedSquareY]->northWestCorner.z = newHeightNE;
+        mapSquares[selectedSquareX + 1][selectedSquareY]->southWestCorner.z = newHeightSE;
+        if(selectedSquareY - 1 >= 0){
+            mapSquares[selectedSquareX + 1][selectedSquareY - 1]->southWestCorner.z = newHeightNE;
+        }
+        if(selectedSquareY + 1 < mapSizeY){
+            mapSquares[selectedSquareX + 1][selectedSquareY + 1]->northWestCorner.z = newHeightSE;
+        }
+    }
+    if(selectedSquareY - 1 >= 0){
+        mapSquares[selectedSquareX][selectedSquareY - 1]->southWestCorner.z = newHeightNW;
+        mapSquares[selectedSquareX][selectedSquareY - 1]->southEastCorner.z = newHeightNE;
+    }
+    if(selectedSquareY + 1 < mapSizeY){
+        mapSquares[selectedSquareX][selectedSquareY + 1]->northWestCorner.z = newHeightSW;
+        mapSquares[selectedSquareX][selectedSquareY + 1]->northEastCorner.z = newHeightSE;
+    }
+
+}
+
+void Map::setSurroundingCoordinateHeights(int centralSquareX, int centralSquareY, int newHeight){
+
+}
+
 void Map::moveSelectedSquare(DataTypes::Direction direction) {
 
     switch(direction){
@@ -106,3 +152,4 @@ void Map::moveSelectedSquare(DataTypes::Direction direction) {
     }
 
 }
+

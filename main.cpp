@@ -16,12 +16,14 @@ int SDL_main(int argc, char *argv[])
 
     const int SCREEN_WIDTH = 1920;
     const int SCREEN_HEIGHT = 1080;
+
+    int mapSizeX = 60;
+    int mapSizeY = 60;
+
     SDL_Init ( SDL_INIT_VIDEO );
     SDL_Window *window = SDL_CreateWindow ( "MAP SQUARES", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
     SDL_Renderer *renderer = SDL_CreateRenderer ( window, -1, SDL_RENDERER_SOFTWARE );
 
-    int mapSizeX = 60;
-    int mapSizeY = 60;
 
     Map map(mapSizeX, mapSizeY);
     InputHandler inputHandler;
@@ -53,8 +55,6 @@ int SDL_main(int argc, char *argv[])
         }
 
         mapDrawer.drawMap();
-
-
         map.rotateRight();
 
         /* DEBUG - draw cross-hair
@@ -68,7 +68,7 @@ int SDL_main(int argc, char *argv[])
 
         SDL_Delay(50);
 
-        SDL_SetRenderDrawColor ( renderer, 1, 1, 1, 255 );
+        SDL_SetRenderDrawColor ( renderer,0,0,0,255 );
         SDL_RenderClear ( renderer );
 
 
