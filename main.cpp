@@ -1,9 +1,7 @@
-#include <iostream>
 #include "objects/Map.h"
 #include "SDL.h"
 #include "controller/InputHandler.h"
 #include "controller/GameController.h"
-#include "draw/MapDrawer.h"
 
 
 void destroySDL(SDL_Window *window){
@@ -22,17 +20,16 @@ int SDL_main(int argc, char *argv[])
     SDL_Window *window = SDL_CreateWindow ( "MAP SQUARES", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
     SDL_Renderer *renderer = SDL_CreateRenderer ( window, -1, SDL_RENDERER_SOFTWARE );
 
-    int mapSizeX = 20;
-    int mapSizeY = 20;
+    int mapSizeX = 60;
+    int mapSizeY = 60;
 
     Map map(mapSizeX, mapSizeY);
-    MapDrawer mapDrawer(renderer, &map, SCREEN_WIDTH, SCREEN_HEIGHT);
     InputHandler inputHandler;
     GameController gameController;
+    MapDrawer mapDrawer(renderer, &map, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
-    gameController.setInputHandler(&inputHandler);
     gameController.setMap(&map);
+    gameController.setMapDrawer(&mapDrawer);
     inputHandler.setGameController(&gameController);
 
 
@@ -59,9 +56,12 @@ int SDL_main(int argc, char *argv[])
 
 
         map.rotateRight();
+
+        /* DEBUG - draw cross-hair
         SDL_SetRenderDrawColor (renderer , 255, 0, 0, 255 );
-        SDL_RenderDrawLine(renderer, 0, 540,1920, 540);
-        SDL_RenderDrawLine(renderer, 960, 0, 960, 1080);
+        SDL_RenderDrawLine(renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+        SDL_RenderDrawLine(renderer, SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+        */
 
         SDL_UpdateWindowSurface(window);
         SDL_RenderPresent ( renderer );

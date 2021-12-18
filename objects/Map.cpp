@@ -16,17 +16,15 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     for (int i = 0; i < mapSizeX; ++i) {
         vector<MapSquare*> row;
         for (int j = 0; j < mapSizeY; ++j) {
-            Coordinate *nw = new Coordinate( i, j, createRandomHeight(0,5));
-            Coordinate *ne = new Coordinate( i + 1, j, createRandomHeight(0,5));
-            Coordinate *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,5));
-            Coordinate *sw = new Coordinate( i, j + 1, createRandomHeight(0,5));
+            Coordinate *nw = new Coordinate( i, j, createRandomHeight(0,20));
+            Coordinate *ne = new Coordinate( i + 1, j, createRandomHeight(0,20));
+            Coordinate *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,20));
+            Coordinate *sw = new Coordinate( i, j + 1, createRandomHeight(0,20));
             MapSquare *square =  new MapSquare(*ne, *nw, *se, *sw);
             row.push_back(square);
         }
         mapSquares.push_back(row);
     }
-
-    centralPoint = mapSquares[mapSizeX/2][mapSizeY/2]->northWestCorner;
 
     for (int i = 0; i < mapSizeX; ++i) {
 

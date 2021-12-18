@@ -3,15 +3,23 @@
 //
 
 #include "GameController.h"
+#include "../draw/MapDrawer.h"
 
-#include <utility>
 
 GameController::GameController() {
 
 }
 
-void GameController::setInputHandler(InputHandler *_inputHandler) {
-    inputHandler = _inputHandler;
+void GameController::setMapDrawer(MapDrawer *_mapDrawer){
+    mapDrawer = _mapDrawer;
+}
+
+void GameController::increaseZoom(){
+    mapDrawer->increaseZoom();
+}
+
+void GameController::decreaseZoom(){
+    mapDrawer->decreaseZoom();
 }
 
 void GameController::rotateLeft() {

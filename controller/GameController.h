@@ -7,25 +7,25 @@
 
 
 #include "../objects/Map.h"
-#include "InputHandler.h"
+#include "../draw/MapDrawer.h"
 
-class InputHandler;
+class MapDrawer;
 
 class GameController {
 
-
 public:
-
     GameController();
 
     Map *map;
-    InputHandler *inputHandler;
+    MapDrawer *mapDrawer;
 
     void setMap(Map *_map);
-    void setInputHandler(InputHandler *_inputHandler);
+    void setMapDrawer(MapDrawer *_mapDrawer);
 
     void rotateLeft();
     void rotateRight();
+    void increaseZoom();
+    void decreaseZoom();
 };
 
 

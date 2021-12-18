@@ -12,17 +12,12 @@
 
 class Map {
 
-
-
-
-
 public:
     int mapSizeX = 0;
     int mapSizeY = 0;
 
-    double rotationAngle_degrees = 0;
+    double rotationAngle_degrees = 45;
     double rotationAngle = rotationAngle_degrees * (3.14159 / 180);
-    Coordinate centralPoint;
 
     std::vector<std::vector<MapSquare*>> mapSquares;
 

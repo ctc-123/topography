@@ -17,23 +17,48 @@ void MapDrawer::drawMap() {
     }
 }
 
+void MapDrawer::increaseZoom() {
+    zoomScale += 0.1;
+    if(zoomScale >= 4.0){
+        zoomScale = 4.0;
+    }
+    tileSize = baseTileSize * zoomScale;
+    offsetFromEdgeX = (screenSizeX - (map->mapSizeX * tileSize)) / 2;
+    offsetFromEdgeY = (screenSizeY - (map->mapSizeY * tileSize)) / 2;
+}
+
+void MapDrawer::decreaseZoom(){
+    zoomScale -= 0.1;
+    if(zoomScale <= 0.2){
+        zoomScale = 0.2;
+    }
+    tileSize = baseTileSize * zoomScale;
+    offsetFromEdgeX = (screenSizeX - (map->mapSizeX * tileSize)) / 2;
+    offsetFromEdgeY = (screenSizeY - (map->mapSizeY * tileSize)) / 2;
+}
+
 void MapDrawer::drawMapSquare(int i, int j) {
 
     SDL_SetRenderDrawColor (renderer , 100, 255, 0, 255 );
+
+    if(i == map->mapSizeX / 2 && j == map->mapSizeY / 2)
+    {
+        SDL_SetRenderDrawColor (renderer , 255, 0, 0, 255 );
+    }
 
     Coordinate ne = map->mapSquares[i][j]->northEastCorner;
     Coordinate nw = map->mapSquares[i][j]->northWestCorner;
     Coordinate se = map->mapSquares[i][j]->southEastCorner;
     Coordinate sw = map->mapSquares[i][j]->southWestCorner;
 
-    nw.x = (nw.x * TILE_SIZE) + offsetFromEdgeX;
-    nw.y = (nw.y * TILE_SIZE) + offsetFromEdgeY;
-    ne.x = (ne.x * TILE_SIZE) + offsetFromEdgeX;
-    ne.y = (ne.y * TILE_SIZE) + offsetFromEdgeY;
-    se.x = (se.x * TILE_SIZE) + offsetFromEdgeX;
-    se.y = (se.y * TILE_SIZE) + offsetFromEdgeY;
-    sw.x = (sw.x * TILE_SIZE) + offsetFromEdgeX;
-    sw.y = (sw.y * TILE_SIZE) + offsetFromEdgeY;
+    nw.x = (nw.x * tileSize) + offsetFromEdgeX;
+    nw.y = (nw.y * tileSize) + offsetFromEdgeY;
+    ne.x = (ne.x * tileSize) + offsetFromEdgeX;
+    ne.y = (ne.y * tileSize) + offsetFromEdgeY;
+    se.x = (se.x * tileSize) + offsetFromEdgeX;
+    se.y = (se.y * tileSize) + offsetFromEdgeY;
+    sw.x = (sw.x * tileSize) + offsetFromEdgeX;
+    sw.y = (sw.y * tileSize) + offsetFromEdgeY;
 
     applyRotation(&ne);
     applyRotation(&nw);
@@ -44,11 +69,6 @@ void MapDrawer::drawMapSquare(int i, int j) {
     SDL_RenderDrawLine(renderer, sw.x, sw.y, se.x, se.y);
     SDL_RenderDrawLine(renderer, nw.x, nw.y, ne.x, ne.y);
     SDL_RenderDrawLine(renderer, ne.x, ne.y, se.x, se.y);
-}
-
-void MapDrawer::centreOnScreen(Coordinate* ne, Coordinate* nw, Coordinate* se, Coordinate* sw) {
-
-
 }
 
 void MapDrawer::applyRotation(Coordinate* coord) {
@@ -65,27 +85,27 @@ void MapDrawer::applyRotation(Coordinate* coord) {
 
     //make isometric
     double px = (rx - ry);
-    double py = ((rx + ry)  / 2);// - coord->z;
+    double py = ((rx + ry)  / 2) - coord->z;
     coord->x = px  + centralPoint.x;
     coord->y = py + centralPoint.y;
 }
 
 MapDrawer::MapDrawer(SDL_Renderer *r, Map *aMap, int aScreenSizeX, int aScreenSizeY) : renderer(r), map(aMap), screenSizeX(aScreenSizeX), screenSizeY(aScreenSizeY)
 {
-    offsetFromEdgeX = 2 * (aScreenSizeX / 8);
-    offsetFromEdgeY = 0.5625 * (aScreenSizeY / 8);
+    auto sx = static_cast<double>(screenSizeX);
+    auto sy = static_cast<double>(screenSizeY);
 
     if(screenSizeY > screenSizeX){
-        offsetFromEdge = 2 * (screenSizeY/8);
-        TILE_SIZE = (screenSizeX - (2 * offsetFromEdgeX)) / aMap->mapSizeX;
+        baseTileSize = (screenSizeX / aMap->mapSizeX) * 0.5;
     }else{
-        offsetFromEdge = 2 * (screenSizeX/8);
-        TILE_SIZE = (screenSizeY - (2 * offsetFromEdgeY)) / aMap->mapSizeY;
+        baseTileSize = (screenSizeY / aMap->mapSizeY) * 0.9;
     }
 
-
-    centralPoint.x = 960;//(aMap->centralPoint.x * ((screenSizeX - (2 * offsetFromEdgeX)) / aMap->mapSizeX)) + offsetFromEdgeX;
-    centralPoint.y = 540;//(aMap->centralPoint.y * ((screenSizeY - (2 * offsetFromEdgeY)) / aMap->mapSizeY)) + offsetFromEdgeY;
+    offsetFromEdgeX = (screenSizeX - (map->mapSizeX * baseTileSize)) / 2;
+    offsetFromEdgeY = (screenSizeY - (map->mapSizeY * baseTileSize)) / 2;
+    tileSize = baseTileSize;
+    centralPoint.x = ceil(sx / 2);
+    centralPoint.y = ceil(sy / 2);
 
 }
 

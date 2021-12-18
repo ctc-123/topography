@@ -8,6 +8,7 @@ void InputHandler::setGameController(GameController *_gameController) {
     gameController = _gameController;
 }
 
+
 void InputHandler::handleInput(SDL_Event &event) {
     if(event.type == SDL_MOUSEBUTTONDOWN ||
         event.type == SDL_MOUSEBUTTONUP){
@@ -15,6 +16,20 @@ void InputHandler::handleInput(SDL_Event &event) {
     }
     else if(event.type == SDL_KEYDOWN){
         handleKeyboardEvent(event.key);
+    }
+    else if(event.type == SDL_MOUSEWHEEL){
+        handleScrollEvent(event.wheel);
+    }
+}
+
+void InputHandler::handleScrollEvent(SDL_MouseWheelEvent event){
+    if(event.y > 0) // scroll up
+    {
+        gameController->increaseZoom();
+    }
+    else if(event.y < 0) // scroll down
+    {
+        gameController->decreaseZoom();
     }
 }
 
