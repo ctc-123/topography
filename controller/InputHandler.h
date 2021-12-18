@@ -23,7 +23,6 @@ public:
 private:
     void handleKeyboardEvent(SDL_KeyboardEvent& event);
     void handleMouseClick(SDL_MouseButtonEvent& event);
-
     void handleScrollEvent(SDL_MouseWheelEvent);
 };
 

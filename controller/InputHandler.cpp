@@ -3,6 +3,8 @@
 //
 
 #include "InputHandler.h"
+#include "../data/DataTypes.h"
+
 
 void InputHandler::setGameController(GameController *_gameController) {
     gameController = _gameController;
@@ -23,11 +25,11 @@ void InputHandler::handleInput(SDL_Event &event) {
 }
 
 void InputHandler::handleScrollEvent(SDL_MouseWheelEvent event){
-    if(event.y > 0) // scroll up
+    if(event.y > 0)
     {
         gameController->increaseZoom();
     }
-    else if(event.y < 0) // scroll down
+    else if(event.y < 0)
     {
         gameController->decreaseZoom();
     }
@@ -43,10 +45,16 @@ void InputHandler::handleKeyboardEvent(SDL_KeyboardEvent &event) {
     if(event.type ==  SDL_KEYDOWN){
         SDL_Keysym key = event.keysym;
         if(key.scancode == SDL_SCANCODE_LEFT){
-            gameController->rotateLeft();
+            gameController->moveMapSelection(DataTypes::Direction::LEFT);
         }
         else if(key.scancode == SDL_SCANCODE_RIGHT){
-            gameController->rotateRight();
+            gameController->moveMapSelection(DataTypes::Direction::RIGHT);
+        }
+        else if(key.scancode == SDL_SCANCODE_DOWN){
+            gameController->moveMapSelection(DataTypes::Direction::DOWN);
+        }
+        else if(key.scancode == SDL_SCANCODE_UP){
+            gameController->moveMapSelection(DataTypes::Direction::UP);
         }
     }
 }

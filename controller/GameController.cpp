@@ -6,6 +6,7 @@
 #include "../draw/MapDrawer.h"
 
 
+
 GameController::GameController() {
 
 }
@@ -32,4 +33,8 @@ void GameController::rotateRight() {
 
 void GameController::setMap(Map *_map) {
     map = _map;
+}
+
+void GameController::moveMapSelection(DataTypes::Direction direction) {
+    map->moveSelectedSquare(direction);
 }

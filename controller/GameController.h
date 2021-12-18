@@ -8,6 +8,7 @@
 
 #include "../objects/Map.h"
 #include "../draw/MapDrawer.h"
+#include "../data/DataTypes.h"
 
 class MapDrawer;
 
@@ -22,6 +23,7 @@ public:
     void setMap(Map *_map);
     void setMapDrawer(MapDrawer *_mapDrawer);
 
+    void moveMapSelection(DataTypes::Direction direction);
     void rotateLeft();
     void rotateRight();
     void increaseZoom();

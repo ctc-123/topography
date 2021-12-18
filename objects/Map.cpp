@@ -60,17 +60,49 @@ int Map::createRandomHeight(int lowerBound, int upperBound)
 }
 
 void Map::rotateRight() {
-    rotationAngle_degrees += 0.5;
-    if(rotationAngle_degrees >=359){
+    rotationAngle_degrees += 0.1;
+    if(rotationAngle_degrees >=359.9){
         rotationAngle_degrees = 0;
     }
     rotationAngle = rotationAngle_degrees * (3.14159 / 180);
 }
 
 void Map::rotateLeft() {
-    rotationAngle_degrees-= 0.5;
+    rotationAngle_degrees-= 0.1;
     if(rotationAngle_degrees < 0){
         rotationAngle_degrees = 359;
     }
     rotationAngle = rotationAngle_degrees * (3.14159 / 180);
+}
+
+void Map::moveSelectedSquare(DataTypes::Direction direction) {
+
+    switch(direction){
+        case DataTypes::Direction::LEFT:
+            selectedSquareX--;
+            break;
+        case DataTypes::Direction::RIGHT:
+            selectedSquareX++;
+            break;
+        case DataTypes::Direction::UP:
+            selectedSquareY++;
+            break;
+        case DataTypes::Direction::DOWN:
+            selectedSquareY--;
+            break;
+    }
+
+    if(selectedSquareX >= mapSizeX - 1){
+        selectedSquareX = mapSizeX - 1;
+    }
+    else if(selectedSquareX < 0){
+        selectedSquareX = 0;
+    }
+    if(selectedSquareY >= mapSizeY - 1){
+        selectedSquareY = mapSizeY - 1;
+    }
+    else if(selectedSquareY < 0){
+        selectedSquareY = 0;
+    }
+
 }

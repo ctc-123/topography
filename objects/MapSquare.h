@@ -8,12 +8,6 @@
 
 #include "Coordinate.h"
 
-enum NODE_TYPE
-{
-    DEFAULT,
-    BASE
-};
-
 class MapSquare {
 
 public:
@@ -26,7 +20,7 @@ public:
     }
 
 private:
-    const NODE_TYPE nodeType = DEFAULT;
+
 };
 
 

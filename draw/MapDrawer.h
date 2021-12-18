@@ -18,11 +18,13 @@ public:
     int screenSizeY = 0;
     int baseTileSize = 0;
     int tileSize = 0;
-    int offsetFromEdge = 0;
     int offsetFromEdgeX = 0;
     int offsetFromEdgeY = 0;
     double zoomScale = 1.0;
     Coordinate centralPoint;
+
+    SDL_Color mapColour{0, 255,0,0};
+    SDL_Color selectedSquareColour{255, 0, 0, 0};
 
     MapDrawer(SDL_Renderer *r, Map *aMap , int aScreenSizeX, int aScreenSizeY);
     void drawMap();
@@ -31,8 +33,9 @@ public:
 
 private:
     void applyRotation(Coordinate *coord);
-    void drawMapSquare(int i, int j);
+    void drawMapSquare(int i, int j, SDL_Color colour);
 
+    void drawSelectedSquare();
 };
 
 

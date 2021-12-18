@@ -9,6 +9,7 @@
 #include <vector>
 #include <array>
 #include "MapSquare.h"
+#include "../data/DataTypes.h"
 
 class Map {
 
@@ -19,17 +20,21 @@ public:
     double rotationAngle_degrees = 45;
     double rotationAngle = rotationAngle_degrees * (3.14159 / 180);
 
+    int selectedSquareX = 0;
+    int selectedSquareY = 0;
+
     std::vector<std::vector<MapSquare*>> mapSquares;
+
 
     Map() = default;
     Map(int aMapSizeX, int aMapSizeY);
 
     void rotateLeft();
     void rotateRight();
+    void moveSelectedSquare(DataTypes::Direction direction);
 
 private:
     int createRandomHeight(int lowerBound, int upperBound);
-
 };
 
 
