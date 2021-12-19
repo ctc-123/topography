@@ -9,6 +9,7 @@
 #include "../objects/Map.h"
 #include "../draw/MapDrawer.h"
 #include "../data/DataTypes.h"
+#include "../data/ButtonMap.h"
 
 class MapDrawer;
 
@@ -23,13 +24,26 @@ public:
     void setMap(Map *_map);
     void setMapDrawer(MapDrawer *_mapDrawer);
 
-    void moveMapSelection(DataTypes::Direction direction);
     void rotateLeft();
     void rotateRight();
+    void setButtonPressed(ButtonMap::button button);
+    void setButtonReleased(ButtonMap::button button);
     void increaseZoom();
     void decreaseZoom();
 
+    void update();
+
+private:
     void changeSquareHeight(DataTypes::Direction direction);
+    void moveMapSelection(DataTypes::Direction direction);
+    bool moveSelectionLeftPressed = false;
+    bool moveSelectionRightPressed = false;
+    bool moveSelectionUpPressed = false;
+    bool moveSelectionDownPressed = false;
+    bool raiseSelectionPressed = false;
+    bool lowerSelectionPressed = false;
+
+
 };
 
 

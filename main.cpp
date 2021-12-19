@@ -42,7 +42,7 @@ int SDL_main(int argc, char *argv[])
     while ( is_running )
     {
         SDL_Event event;
-        if ( SDL_PollEvent( &event ))
+        while ( SDL_PollEvent( &event ))
         {
             if ( event.type == SDL_QUIT )
             {
@@ -53,6 +53,8 @@ int SDL_main(int argc, char *argv[])
                 inputHandler.handleInput(event);
             }
         }
+
+        gameController.update();
 
         mapDrawer.drawMap();
         map.rotateRight();
@@ -66,7 +68,7 @@ int SDL_main(int argc, char *argv[])
         SDL_UpdateWindowSurface(window);
         SDL_RenderPresent ( renderer );
 
-        SDL_Delay(50);
+        SDL_Delay(7);
 
         SDL_SetRenderDrawColor ( renderer,0,0,0,255 );
         SDL_RenderClear ( renderer );

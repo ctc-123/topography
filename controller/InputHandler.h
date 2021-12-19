@@ -21,7 +21,8 @@ public:
     void setGameController(GameController *_gameController);
 
 private:
-    void handleKeyboardEvent(SDL_KeyboardEvent& event);
+    void handleKeyboardEventUp(SDL_KeyboardEvent& event);
+    void handleKeyboardEventDown(SDL_KeyboardEvent& event);
     void handleMouseClick(SDL_MouseButtonEvent& event);
     void handleScrollEvent(SDL_MouseWheelEvent);
 };

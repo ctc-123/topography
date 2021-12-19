@@ -34,7 +34,7 @@ public:
     void changeSquareHeight(DataTypes::Direction direction);
 
 private:
-    int createRandomHeight(int lowerBound, int upperBound);
+    static int createRandomHeight(int lowerBound, int upperBound);
 
     void setSurroundingCoordinateHeights(int centralSquareX, int centralSquareY, int newHeight);
 };

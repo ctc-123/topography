@@ -17,7 +17,10 @@ void InputHandler::handleInput(SDL_Event &event) {
         handleMouseClick(event.button);
     }
     else if(event.type == SDL_KEYDOWN){
-        handleKeyboardEvent(event.key);
+        handleKeyboardEventDown(event.key);
+    }
+    else if(event.type == SDL_KEYUP){
+        handleKeyboardEventUp(event.key);
     }
     else if(event.type == SDL_MOUSEWHEEL){
         handleScrollEvent(event.wheel);
@@ -41,26 +44,48 @@ void InputHandler::handleMouseClick(SDL_MouseButtonEvent &event) {
     }
 }
 
-void InputHandler::handleKeyboardEvent(SDL_KeyboardEvent &event) {
-    if(event.type ==  SDL_KEYDOWN){
-        SDL_Keysym key = event.keysym;
-        if(key.scancode == SDL_SCANCODE_LEFT){
-            gameController->moveMapSelection(DataTypes::LEFT);
-        }
-        else if(key.scancode == SDL_SCANCODE_RIGHT){
-            gameController->moveMapSelection(DataTypes::RIGHT);
-        }
-        else if(key.scancode == SDL_SCANCODE_DOWN){
-            gameController->moveMapSelection(DataTypes::DOWN);
-        }
-        else if(key.scancode == SDL_SCANCODE_UP){
-            gameController->moveMapSelection(DataTypes::UP);
-        }
-        else if(key.scancode == SDL_SCANCODE_SPACE){
-            gameController->changeSquareHeight(DataTypes::UP);
-        }
-        else if(key.scancode == SDL_SCANCODE_LCTRL){
-            gameController->changeSquareHeight(DataTypes::DOWN);
-        }
+void InputHandler::handleKeyboardEventUp(SDL_KeyboardEvent &event){
+    SDL_Keysym key = event.keysym;
+    if(key.scancode == SDL_SCANCODE_LEFT){
+        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_LEFT);
     }
+    else if(key.scancode == SDL_SCANCODE_RIGHT){
+        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_RIGHT);
+    }
+    else if(key.scancode == SDL_SCANCODE_DOWN){
+        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_DOWN);
+    }
+    else if(key.scancode == SDL_SCANCODE_UP){
+        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_UP);
+    }
+    else if(key.scancode == SDL_SCANCODE_SPACE){
+        gameController->setButtonReleased(ButtonMap::RAISE_SELECTION);
+    }
+    else if(key.scancode == SDL_SCANCODE_LCTRL){
+        gameController->setButtonReleased(ButtonMap::LOWER_SELECTION);
+    }
+}
+
+void InputHandler::handleKeyboardEventDown(SDL_KeyboardEvent &event) {
+    SDL_Keysym key = event.keysym;
+
+    if(key.scancode == SDL_SCANCODE_LEFT){
+        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_LEFT);
+    }
+    else if(key.scancode == SDL_SCANCODE_RIGHT){
+        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_RIGHT);
+    }
+    else if(key.scancode == SDL_SCANCODE_DOWN){
+        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_DOWN);
+    }
+    else if(key.scancode == SDL_SCANCODE_UP){
+        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_UP);
+    }
+    else if(key.scancode == SDL_SCANCODE_SPACE){
+        gameController->setButtonPressed(ButtonMap::RAISE_SELECTION);
+    }
+    else if(key.scancode == SDL_SCANCODE_LCTRL){
+        gameController->setButtonPressed(ButtonMap::LOWER_SELECTION);
+    }
+
 }

@@ -15,11 +15,11 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     for (int i = 0; i < mapSizeX; ++i) {
         vector<MapSquare*> row;
         for (int j = 0; j < mapSizeY; ++j) {
-            Coordinate *nw = new Coordinate( i, j, createRandomHeight(0,0));
-            Coordinate *ne = new Coordinate( i + 1, j, createRandomHeight(0,0));
-            Coordinate *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,0));
-            Coordinate *sw = new Coordinate( i, j + 1, createRandomHeight(0,0));
-            MapSquare *square =  new MapSquare(*ne, *nw, *se, *sw);
+            auto *nw = new Coordinate( i, j, createRandomHeight(0,0));
+            auto *ne = new Coordinate( i + 1, j, createRandomHeight(0,0));
+            auto *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,0));
+            auto *sw = new Coordinate( i, j + 1, createRandomHeight(0,0));
+            auto *square =  new MapSquare(*ne, *nw, *se, *sw);
             row.push_back(square);
         }
         mapSquares.push_back(row);
@@ -76,10 +76,88 @@ void Map::rotateLeft() {
 
 void Map::changeSquareHeight(DataTypes::Direction direction){
     int change = (direction == DataTypes::UP) ? 3 : -3;
-    int newHeightNW = mapSquares[selectedSquareX][selectedSquareY]->northWestCorner.z + change;
-    int newHeightNE = mapSquares[selectedSquareX][selectedSquareY]->northEastCorner.z + change;
-    int newHeightSW = mapSquares[selectedSquareX][selectedSquareY]->southWestCorner.z + change;
-    int newHeightSE = mapSquares[selectedSquareX][selectedSquareY]->southEastCorner.z + change;
+
+    double oldHeightNW = mapSquares[selectedSquareX][selectedSquareY]->northWestCorner.z;
+    double oldHeightNE = mapSquares[selectedSquareX][selectedSquareY]->northEastCorner.z;
+    double oldHeightSW = mapSquares[selectedSquareX][selectedSquareY]->southWestCorner.z;
+    double oldHeightSE = mapSquares[selectedSquareX][selectedSquareY]->southEastCorner.z;
+    double newHeightNW = 0;
+    double newHeightNE = 0;
+    double newHeightSW = 0;
+    double newHeightSE = 0;
+
+    //if all heights are the same
+    if(oldHeightNE == oldHeightNW && oldHeightNE == oldHeightSE && oldHeightNE == oldHeightSW){
+        newHeightNW = oldHeightNW + change;
+        newHeightNE = oldHeightNE + change;
+        newHeightSW = oldHeightSW + change;
+        newHeightSE = oldHeightSE + change;
+    }
+    else if(direction == DataTypes::UP)
+    {
+        int heightLimit = -INT32_MAX;
+
+        //find the highest
+        if(oldHeightNE > heightLimit) heightLimit = oldHeightNE;
+        if(oldHeightNW > heightLimit) heightLimit = oldHeightNW;
+        if(oldHeightSE > heightLimit) heightLimit = oldHeightSE;
+        if(oldHeightSW > heightLimit) heightLimit = oldHeightSW;
+
+        if(oldHeightNE + change < heightLimit){
+            newHeightNE = oldHeightNE + change;
+        }else if(oldHeightNE + change >= heightLimit){
+            newHeightNE = heightLimit;
+        }
+        if(oldHeightNW + change < heightLimit){
+            newHeightNW = oldHeightNW + change;
+        }else if(oldHeightNW + change >= heightLimit){
+            newHeightNW = heightLimit;
+        }
+        if(oldHeightSE + change < heightLimit){
+            newHeightSE = oldHeightSE + change;
+        }else if(oldHeightSE + change >= heightLimit){
+            newHeightSE = heightLimit;
+        }
+        if(oldHeightSW + change < heightLimit){
+            newHeightSW = oldHeightSW + change;
+        }else if(oldHeightSW + change >= heightLimit){
+            newHeightSW = heightLimit;
+        }
+
+    }
+    else if(direction == DataTypes::DOWN)
+    {
+        int heightLimit = INT32_MAX;
+
+        //find the lowest
+        if(oldHeightNE < heightLimit) heightLimit = oldHeightNE;
+        if(oldHeightNW < heightLimit) heightLimit = oldHeightNW;
+        if(oldHeightSE < heightLimit) heightLimit = oldHeightSE;
+        if(oldHeightSW < heightLimit) heightLimit = oldHeightSW;
+
+        if(oldHeightNE + change > heightLimit){
+            newHeightNE = oldHeightNE + change;
+        }else if(oldHeightNE + change <= heightLimit){
+            newHeightNE = heightLimit;
+        }
+        if(oldHeightNW + change > heightLimit){
+            newHeightNW = oldHeightNW + change;
+        }else if(oldHeightNW + change <= heightLimit){
+            newHeightNW = heightLimit;
+        }
+        if(oldHeightSE + change > heightLimit){
+            newHeightSE = oldHeightSE + change;
+        }else if(oldHeightSE + change <= heightLimit){
+            newHeightSE = heightLimit;
+        }
+        if(oldHeightSW + change > heightLimit){
+            newHeightSW = oldHeightSW + change;
+        }else if(oldHeightSW + change <= heightLimit){
+            newHeightSW = heightLimit;
+        }
+
+    }
+
 
     mapSquares[selectedSquareX][selectedSquareY]->northWestCorner.z = newHeightNW;
     mapSquares[selectedSquareX][selectedSquareY]->northEastCorner.z = newHeightNE;
@@ -117,18 +195,14 @@ void Map::changeSquareHeight(DataTypes::Direction direction){
 
 }
 
-void Map::setSurroundingCoordinateHeights(int centralSquareX, int centralSquareY, int newHeight){
-
-}
-
 void Map::moveSelectedSquare(DataTypes::Direction direction) {
 
     switch(direction){
         case DataTypes::Direction::LEFT:
-            selectedSquareX--;
+            selectedSquareX++;
             break;
         case DataTypes::Direction::RIGHT:
-            selectedSquareX++;
+            selectedSquareX--;
             break;
         case DataTypes::Direction::UP:
             selectedSquareY++;

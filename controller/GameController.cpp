@@ -11,6 +11,61 @@ GameController::GameController() {
 
 }
 
+void GameController::update(){
+    if(moveSelectionLeftPressed){moveMapSelection(DataTypes::LEFT);}
+    if(moveSelectionRightPressed){moveMapSelection(DataTypes::RIGHT);}
+    if(moveSelectionUpPressed){moveMapSelection(DataTypes::UP);}
+    if(moveSelectionDownPressed){moveMapSelection(DataTypes::DOWN);}
+    if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
+    if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
+}
+
+void GameController::setButtonPressed(ButtonMap::button button){
+    switch (button) {
+        case ButtonMap::MOVE_SELECTION_UP :
+            moveSelectionUpPressed = true;
+            break;
+        case ButtonMap::MOVE_SELECTION_DOWN :
+            moveSelectionDownPressed = true;
+            break;
+        case ButtonMap::MOVE_SELECTION_LEFT :
+            moveSelectionLeftPressed = true;
+            break;
+        case ButtonMap::MOVE_SELECTION_RIGHT :
+            moveSelectionRightPressed = true;
+            break;
+        case ButtonMap::RAISE_SELECTION :
+            raiseSelectionPressed = true;
+            break;
+        case ButtonMap::LOWER_SELECTION :
+            lowerSelectionPressed = true;
+            break;
+    }
+}
+
+void GameController::setButtonReleased(ButtonMap::button button){
+    switch (button) {
+        case ButtonMap::MOVE_SELECTION_UP :
+            moveSelectionUpPressed = false;
+            break;
+        case ButtonMap::MOVE_SELECTION_DOWN :
+            moveSelectionDownPressed = false;
+            break;
+        case ButtonMap::MOVE_SELECTION_LEFT :
+            moveSelectionLeftPressed = false;
+            break;
+        case ButtonMap::MOVE_SELECTION_RIGHT :
+            moveSelectionRightPressed = false;
+            break;
+        case ButtonMap::RAISE_SELECTION :
+            raiseSelectionPressed = false;
+            break;
+        case ButtonMap::LOWER_SELECTION :
+            lowerSelectionPressed = false;
+            break;
+    }
+}
+
 void GameController::changeSquareHeight(DataTypes::Direction direction){
     map->changeSquareHeight(direction);
 }

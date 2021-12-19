@@ -9,11 +9,11 @@
 class Coordinate {
 
 public:
-    double x;
-    double y;
-    double z;
+    int x;
+    int y;
+    int z;
     Coordinate(): x(0), y(0), z(0){};
-    Coordinate(double _x, double _y, double _z) : x(_x), y(_y), z(_z){}
+    Coordinate(int _x, int _y, int _z) : x(_x), y(_y), z(_z){}
 
 };
 
