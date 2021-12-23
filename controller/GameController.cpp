@@ -18,6 +18,8 @@ void GameController::update(){
     if(moveSelectionDownPressed){moveMapSelection(DataTypes::DOWN);}
     if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
     if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
+
+    unitManager->update();
 }
 
 void GameController::setButtonPressed(ButtonMap::button button){
@@ -97,3 +99,8 @@ void GameController::setMapDrawer(MapDrawer *_mapDrawer){
 void GameController::setMap(Map *_map) {
     map = _map;
 }
+
+void GameController::setUnitManager(UnitManager *aUnitManager) {
+    unitManager = aUnitManager;
+}
+

@@ -20,9 +20,11 @@ public:
 
     Map *map;
     MapDrawer *mapDrawer;
+    UnitManager *unitManager;
 
     void setMap(Map *_map);
     void setMapDrawer(MapDrawer *_mapDrawer);
+    void setUnitManager(UnitManager *aUnitManager);
 
     void rotateLeft();
     void rotateRight();
@@ -42,6 +44,8 @@ private:
     bool moveSelectionDownPressed = false;
     bool raiseSelectionPressed = false;
     bool lowerSelectionPressed = false;
+
+
 
 
 };

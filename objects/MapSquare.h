@@ -7,17 +7,24 @@
 #define TOPOGRAPHY_MAPSQUARE_H
 
 #include "Coordinate.h"
+#include "MapSquareTraversals.h"
 
 class MapSquare {
 
 public:
-    Coordinate northEastCorner;
-    Coordinate northWestCorner;
-    Coordinate southEastCorner;
-    Coordinate southWestCorner;
-    MapSquare(Coordinate &ne, Coordinate &nw, Coordinate &se, Coordinate &sw) : northEastCorner(ne), northWestCorner(nw), southEastCorner(se), southWestCorner(sw) {
+    Coordinate northEast;
+    Coordinate northWest;
+    Coordinate southEast;
+    Coordinate southWest;
+    MapSquareTraversals traversals;
+
+
+
+    MapSquare(Coordinate &ne, Coordinate &nw, Coordinate &se, Coordinate &sw) : northEast(ne), northWest(nw), southEast(se), southWest(sw) {
 
     }
+
+    void updateTraversalPaths();
 
 private:
 
@@ -29,3 +36,4 @@ private:
 
 
 #endif //TOPOGRAPHY_MAPSQUARE_H
+

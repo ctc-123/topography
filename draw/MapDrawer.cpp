@@ -8,11 +8,10 @@
 #include <cmath>
 
 void MapDrawer::drawMap() {
-    for(int i = 0; i < map->mapSizeX; i++)
-    {
-        for (int j = 0; j < map->mapSizeY; ++j)
-        {
-            drawMapSquare(i, j, mapColour);
+
+    for(std::vector<MapSquare*> row : map->mapSquares){
+        for(MapSquare* mapSquare : row){
+            drawMapSquare(mapSquare);
         }
     }
     drawSelectedSquare();
@@ -21,10 +20,10 @@ void MapDrawer::drawMap() {
 
 void MapDrawer::drawSelectedSquare(){
     SDL_SetRenderDrawColor (renderer , selectedSquareColour.r, selectedSquareColour.g, selectedSquareColour.b, selectedSquareColour.a);
-    Coordinate ne = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->northEastCorner;
-    Coordinate nw = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->northWestCorner;
-    Coordinate se = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->southEastCorner;
-    Coordinate sw = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->southWestCorner;
+    Coordinate ne = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->northEast;
+    Coordinate nw = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->northWest;
+    Coordinate se = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->southEast;
+    Coordinate sw = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->southWest;
 
     nw.x = (nw.x * tileSize) + offsetFromEdgeX;
     nw.y = (nw.y * tileSize) + offsetFromEdgeY;
@@ -46,13 +45,14 @@ void MapDrawer::drawSelectedSquare(){
     SDL_RenderDrawLine(renderer, ne.x, ne.y, se.x, se.y);
 }
 
-void MapDrawer::drawMapSquare(int i, int j, SDL_Color colour) {
+void MapDrawer::drawMapSquare(MapSquare *mapSquare) {
 
-    SDL_SetRenderDrawColor (renderer , colour.r, colour.g, colour.b, colour.a);
+    SDL_SetRenderDrawColor (renderer , mapColour.r, mapColour.g, mapColour.b, mapColour.a);
 
-    Coordinate ne = map->mapSquares[i][j]->northEastCorner;
-    Coordinate nw = map->mapSquares[i][j]->northWestCorner;
-    Coordinate sw = map->mapSquares[i][j]->southWestCorner;
+    Coordinate ne = mapSquare->northEast;
+    Coordinate nw = mapSquare->northWest;
+    Coordinate se = mapSquare->southEast;
+    Coordinate sw = mapSquare->southWest;
 
     nw.x = (nw.x * tileSize) + offsetFromEdgeX;
     nw.y = (nw.y * tileSize) + offsetFromEdgeY;
@@ -60,24 +60,61 @@ void MapDrawer::drawMapSquare(int i, int j, SDL_Color colour) {
     ne.y = (ne.y * tileSize) + offsetFromEdgeY;
     sw.x = (sw.x * tileSize) + offsetFromEdgeX;
     sw.y = (sw.y * tileSize) + offsetFromEdgeY;
+    se.x = (se.x * tileSize) + offsetFromEdgeX;
+    se.y = (se.y * tileSize) + offsetFromEdgeY;
 
     applyRotation(&ne);
     applyRotation(&nw);
+    applyRotation(&se);
     applyRotation(&sw);
 
+    //fillSpace(&ne, &nw, &se, &sw);
     SDL_RenderDrawLine(renderer, nw.x, nw.y, sw.x, sw.y);
     SDL_RenderDrawLine(renderer, nw.x, nw.y, ne.x, ne.y);
+    SDL_RenderDrawLine(renderer, sw.x, sw.y, se.x, se.y);
+    SDL_RenderDrawLine(renderer, ne.x, ne.y, se.x, se.y);
 
-    //only need to draw if at south and east edges - otherwise already drawn
-    if(i == map->mapSizeX - 1|| j == map->mapSizeY - 1){
-        Coordinate se = map->mapSquares[i][j]->southEastCorner;
-        se.x = (se.x * tileSize) + offsetFromEdgeX;
-        se.y = (se.y * tileSize) + offsetFromEdgeY;
 
-        applyRotation(&se);
-        SDL_RenderDrawLine(renderer, sw.x, sw.y, se.x, se.y);
-        SDL_RenderDrawLine(renderer, ne.x, ne.y, se.x, se.y);
-    }
+}
+
+void MapDrawer::fillSpace(Coordinate* ne, Coordinate* nw, Coordinate* se, Coordinate* sw){
+
+    SDL_Vertex vert[4];
+    int indices[] = {0, 1, 2, 1, 2, 3};
+
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    // center
+    vert[0].position.x = ne->x;
+    vert[0].position.y = ne->y;
+    vert[0].color.r = 0;
+    vert[0].color.g = 0;
+    vert[0].color.b = 0;
+    vert[0].color.a = 128;
+
+    // left
+    vert[1].position.x = nw->x;
+    vert[1].position.y = nw->y;
+    vert[1].color.r = 0;
+    vert[1].color.g = 0;
+    vert[1].color.b = 0;
+    vert[1].color.a = 128;
+
+    // right
+    vert[2].position.x = se->x;
+    vert[2].position.y = se->y;
+    vert[2].color.r = 0;
+    vert[2].color.g = 0;
+    vert[2].color.b = 0;
+    vert[2].color.a = 128;
+
+    vert[3].position.x = sw->x;
+    vert[3].position.y = sw->y;
+    vert[3].color.r = 0;
+    vert[3].color.g = 0;
+    vert[3].color.b = 0;
+    vert[3].color.a = 128;
+
+    SDL_RenderGeometry(renderer, NULL, vert, 4, indices, 6);
 }
 
 void MapDrawer::applyRotation(Coordinate* coord) {
@@ -120,7 +157,8 @@ void MapDrawer::decreaseZoom(){
     offsetFromEdgeY = (screenSizeY - (map->mapSizeY * tileSize)) / 2;
 }
 
-MapDrawer::MapDrawer(SDL_Renderer *r, Map *aMap, int aScreenSizeX, int aScreenSizeY) : renderer(r), map(aMap), screenSizeX(aScreenSizeX), screenSizeY(aScreenSizeY)
+MapDrawer::MapDrawer(SDL_Renderer *r, Map *aMap, UnitManager* aUnitManager, int aScreenSizeX, int aScreenSizeY)
+                    :renderer(r), map(aMap), unitManager(aUnitManager), screenSizeX(aScreenSizeX), screenSizeY(aScreenSizeY)
 {
     auto sx = static_cast<double>(screenSizeX);
     auto sy = static_cast<double>(screenSizeY);

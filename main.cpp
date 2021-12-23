@@ -28,10 +28,12 @@ int SDL_main(int argc, char *argv[])
     Map map(mapSizeX, mapSizeY);
     InputHandler inputHandler;
     GameController gameController;
-    MapDrawer mapDrawer(renderer, &map, SCREEN_WIDTH, SCREEN_HEIGHT);
+    UnitManager unitManager(100);
+    MapDrawer mapDrawer(renderer, &map, &unitManager, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     gameController.setMap(&map);
     gameController.setMapDrawer(&mapDrawer);
+    gameController.setUnitManager(&unitManager);
     inputHandler.setGameController(&gameController);
 
 
