@@ -7,29 +7,23 @@
 
 
 #include <map>
-#include "../objects/VectorPath.h"
+#include "../objects/Vector.h"
 
 class TraversalVectors {
 public:
-    enum VectorDirection{   vectorNW_E ,
-                            vectorNW_SE,
-                            vectorNW_S ,
-                            vectorN_W ,
-                            vectorN_SW ,
-                            vectorN_S ,
-                            vectorN_SE ,
-                            vectorN_E ,
-                            vectorNE_W ,
-                            vectorNE_SW,
-                            vectorNE_S ,
+
+     enum VectorDirection{   vectorN_S ,
+                            vectorS_N,
+                            vectorNE_SW ,
+                            vectorSW_NE,
                             vectorE_W ,
-                            vectorE_SW ,
-                            vectorE_S ,
-                            vectorSE_W ,
-                            vectorS_W,
+                            vectorW_E ,
+                            vectorSE_NW ,
+                            vectorNW_SE,
                             LAST};
 
-    const static std::map<VectorDirection, Vector> vectors;
+
+    static std::map<VectorDirection, Vector> vectorUV;
     TraversalVectors();
 
 

@@ -40,6 +40,8 @@ private:
     void drawSelectedSquare();
 
     void fillSpace(Coordinate *ne, Coordinate *nw, Coordinate *se, Coordinate *sw);
+
+    void drawUnit(Unit *unit);
 };
 
 

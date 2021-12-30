@@ -15,16 +15,17 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     for (int i = 0; i < mapSizeX; ++i) {
         vector<MapSquare*> row;
         for (int j = 0; j < mapSizeY; ++j) {
-            auto *nw = new Coordinate( i, j, createRandomHeight(0,0));
-            auto *ne = new Coordinate( i + 1, j, createRandomHeight(0,0));
-            auto *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,0));
-            auto *sw = new Coordinate( i, j + 1, createRandomHeight(0,0));
-            auto *square =  new MapSquare(*ne, *nw, *se, *sw);
+            auto *nw = new Coordinate( i, j, createRandomHeight(0,5));
+            auto *ne = new Coordinate( i + 1, j, createRandomHeight(0,5));
+            auto *se = new Coordinate( i + 1, j + 1, createRandomHeight(0,5));
+            auto *sw = new Coordinate( i, j + 1, createRandomHeight(0,5));
+            auto *square =  new MapSquare(*ne, *nw, *se, *sw, i + 0.5, j + 0.5);
             row.push_back(square);
         }
         mapSquares.push_back(row);
     }
 
+    //ensure that all shared points between map squares have same Z value
     for (int i = 0; i < mapSizeX; ++i) {
 
         for (int j = 0; j < mapSizeY; ++j) {
@@ -48,6 +49,12 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 
         }
 
+    }
+
+    for(std::vector<MapSquare*> row : mapSquares){
+        for(MapSquare* mapSquare : row){
+            mapSquare->updateTraversalPaths();
+        }
     }
 
 

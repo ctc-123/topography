@@ -16,13 +16,13 @@ public:
     Coordinate northWest;
     Coordinate southEast;
     Coordinate southWest;
+    double centralX;
+    double centralY;
     MapSquareTraversals traversals;
 
 
 
-    MapSquare(Coordinate &ne, Coordinate &nw, Coordinate &se, Coordinate &sw) : northEast(ne), northWest(nw), southEast(se), southWest(sw) {
-
-    }
+    MapSquare(Coordinate &ne, Coordinate &nw, Coordinate &se, Coordinate &sw, double aCentralX, double aCentralY);
 
     void updateTraversalPaths();
 

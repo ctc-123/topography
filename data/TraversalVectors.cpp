@@ -4,23 +4,18 @@
 
 #include "TraversalVectors.h"
 
+std::map<TraversalVectors::VectorDirection, Vector> TraversalVectors::vectorUV;
 
 TraversalVectors::TraversalVectors() {
-    vectors.insert(vectorNW_E , new Vector(0.0, 0.1));
+    vectorUV.emplace(TraversalVectors::vectorN_S, Vector(0,1));
+    vectorUV.emplace(TraversalVectors::vectorS_N, Vector(0,-1));
+    vectorUV.emplace(TraversalVectors::vectorNE_SW, Vector(-0.7071,0.7071));
+    vectorUV.emplace(TraversalVectors::vectorSW_NE, Vector(0.7071,-0.7071));
+    vectorUV.emplace(TraversalVectors::vectorE_W, Vector(-1,0));
+    vectorUV.emplace(TraversalVectors::vectorW_E, Vector(1,0));
+    vectorUV.emplace(TraversalVectors::vectorSE_NW, Vector(-0.7071,-0.7071));
+    vectorUV.emplace(TraversalVectors::vectorNW_SE, Vector(0.7071,0.7071));
 
-        {vectorNW_SE, Vector(0.0,0.1)},
-        {vectorNW_S , Vector(0.0,0.1)},
-        {vectorN_W ,  Vector(0.0,0.1)},
-        {vectorN_SW , Vector(0.0,0.1)},
-        {vectorN_S ,  Vector(0.0,0.1)},
-        {vectorN_SE , Vector(0.0,0.1)},
-        {vectorN_E , Vector(0.0,0.1)},
-        {vectorNE_W , Vector(0.0,0.1)},
-        {vectorNE_SW, Vector(0.0,0.1)},
-        {vectorNE_S , Vector(0.0,0.1)},
-        {vectorE_W , Vector(0.0,0.1)},
-        {vectorE_SW , Vector(0.0,0.1)},
-        {vectorE_S , Vector(0.0,0.1)},
-        {vectorSE_W , Vector(0.0,0.1)},
-        {vectorS_W, Vector(0.0,0.1)}};
 }
+
+

@@ -19,7 +19,7 @@ void GameController::update(){
     if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
     if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
 
-    unitManager->update();
+    unitManager->update(map);
 }
 
 void GameController::setButtonPressed(ButtonMap::button button){

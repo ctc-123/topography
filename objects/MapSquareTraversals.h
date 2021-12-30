@@ -6,11 +6,12 @@
 #define TOPOGRAPHY_MAPSQUARETRAVERSALS_H
 
 #include "../data/TraversalVectors.h"
-#include "VectorPath.h"
+#include "Vector.h"
 
 class MapSquareTraversals {
 
-    std::map<TraversalVectors::VectorDirection, VectorPath> vectorMap;
+public:
+    std::map<TraversalVectors::VectorDirection, double> directionToSpeedMap;
     MapSquareTraversals();
 
 };

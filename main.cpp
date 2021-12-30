@@ -24,7 +24,8 @@ int SDL_main(int argc, char *argv[])
     SDL_Window *window = SDL_CreateWindow ( "MAP SQUARES", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
     SDL_Renderer *renderer = SDL_CreateRenderer ( window, -1, SDL_RENDERER_SOFTWARE );
 
-
+    //ensure traversal vectors is init - this is a bit hacky?
+    TraversalVectors();
     Map map(mapSizeX, mapSizeY);
     InputHandler inputHandler;
     GameController gameController;
