@@ -18,4 +18,55 @@ TraversalVectors::TraversalVectors() {
 
 }
 
+/*
+ * returns the vector direction enum for the direction *from* point represented by xOne,yOne *to* point xTwo, yTwo
+ * assumes that the given points are adjacent to each other (including diagonally) and are aligned with a grid
+ *
+ * returns false if the given points are invalid
+ */
+bool TraversalVectors::getDirectionForConnection(int xOne, int yOne, int xTwo, int yTwo,
+                                                 TraversalVectors::VectorDirection &direction) {
+    if(xOne < xTwo){
+        if(yOne < yTwo){
+            direction = TraversalVectors::vectorNW_SE;
+            return true;
+        }
+        else if(yOne == yTwo){
+            direction = TraversalVectors::vectorW_E;
+            return true;
+        }
+        else if(yOne > yTwo){
+            direction = TraversalVectors::vectorSW_NE;
+            return true;
+        }
+    }
+    else if(xOne > xTwo){
+        if(yOne < yTwo){
+            direction = TraversalVectors::vectorNE_SW;
+            return true;
+        }
+        else if(yOne == yTwo){
+            direction = TraversalVectors::vectorE_W;
+            return true;
+        }
+        else if(yOne > yTwo){
+            direction = TraversalVectors::vectorSE_NW;
+            return true;
+        }
+    }
+    else if(xOne == xTwo){
+        if(yOne > yTwo){
+            direction = TraversalVectors::vectorS_N;
+            return true;
+        }
+        else if(yOne < yTwo){
+            direction = TraversalVectors::vectorN_S;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 

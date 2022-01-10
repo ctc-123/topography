@@ -13,7 +13,7 @@ public:
     double y;
     double z;
     Coordinate(): x(0), y(0), z(0){};
-    Coordinate(int _x, int _y, int _z) : x(_x), y(_y), z(_z){}
+    Coordinate(double _x, double _y, double _z) : x(_x), y(_y), z(_z){}
 
 };
 

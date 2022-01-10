@@ -81,11 +81,11 @@ void GameController::decreaseZoom(){
 }
 
 void GameController::rotateLeft() {
-    map->rotateLeft();
+    mapDrawer->rotateLeft();
 }
 
 void GameController::rotateRight() {
-    map->rotateRight();
+    mapDrawer->rotateRight();
 }
 
 void GameController::moveMapSelection(DataTypes::Direction direction) {

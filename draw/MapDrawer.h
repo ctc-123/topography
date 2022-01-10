@@ -6,6 +6,7 @@
 #define TOPOGRAPHY_MAPDRAWER_H
 
 #include <SDL_render.h>
+#include <cmath>
 #include "../objects/MapSquare.h"
 #include "../objects/Map.h"
 #include "../controller/UnitManager.h"
@@ -32,8 +33,13 @@ public:
     void drawMap();
     void increaseZoom();
     void decreaseZoom();
+    void rotateRight();
+    void rotateLeft();
 
 private:
+    double rotationAngle = 0.1;
+    double rotationAngleCos = cos(rotationAngle);
+    double rotationAngleSin = sin(rotationAngle);
     void applyRotation(Coordinate *coord);
     void drawMapSquare(MapSquare *mapSquare);
 

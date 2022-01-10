@@ -8,8 +8,11 @@
 
 #include <vector>
 #include <array>
+#include <unordered_map>
 #include "MapSquare.h"
 #include "../data/DataTypes.h"
+#include <cmath>
+
 
 class Map {
 
@@ -17,26 +20,30 @@ public:
     int mapSizeX = 0;
     int mapSizeY = 0;
 
-    double rotationAngle_degrees = 45;
-    double rotationAngle = rotationAngle_degrees * (3.14159 / 180);
+    int selX = 0;
+    int selY = 0;
 
-    int selectedSquareX = 0;
-    int selectedSquareY = 0;
+    int target = 88;
 
-    std::vector<std::vector<MapSquare*>> mapSquares;
-
-    Map() = default;
+    std::vector<MapSquare> mapSquares;
     Map(int aMapSizeX, int aMapSizeY);
 
-    void rotateLeft();
-    void rotateRight();
     void moveSelectedSquare(DataTypes::Direction direction);
     void changeSquareHeight(DataTypes::Direction direction);
+    int getIndexInto(int i, int j);
 
 private:
-    static int createRandomHeight(int lowerBound, int upperBound);
 
-    void setSurroundingCoordinateHeights(int centralSquareX, int centralSquareY, int newHeight);
+    static int createRandomHeight(int lowerBound, int upperBound);
+    bool isValidMapIndex(int i, int j);
+    void updatePath();
+    std::vector<MapSquare*> neighbors(int i, int j);
+    static double distanceBetween(MapSquare one, MapSquare two);
+    static double heightDifference(MapSquare one, MapSquare two);
+    static double heuristic(MapSquare one, MapSquare two);
+    TraversalVectors::VectorDirection getDirectionTo(MapSquare one, MapSquare two);
+
+
 };
 
 

@@ -6,28 +6,43 @@
 #ifndef TOPOGRAPHY_MAPSQUARE_H
 #define TOPOGRAPHY_MAPSQUARE_H
 
+#include <vector>
 #include "Coordinate.h"
-#include "MapSquareTraversals.h"
+#include "../data/TraversalVectors.h"
+
+
+struct Heights{
+    int ne;
+    int nw;
+    int se;
+    int sw;
+};
 
 class MapSquare {
 
 public:
-    Coordinate northEast;
-    Coordinate northWest;
-    Coordinate southEast;
-    Coordinate southWest;
-    double centralX;
-    double centralY;
-    MapSquareTraversals traversals;
+    Coordinate centre;
+    const int UID;
+    Heights heights{};
+    TraversalVectors::VectorDirection directionToTarget = TraversalVectors::vectorN_S;
+    bool hasUpdatedPath = false;
+
+    inline bool operator<(MapSquare& rhs){return UID < rhs.UID;};
+    inline bool operator==(MapSquare& rhs){return UID == rhs.UID;};
 
 
+    void calculateCentralHeight();
+    MapSquare() : UID(0), centre(0,0,0){};
+    MapSquare(Coordinate &aCentre, int aUID);
 
-    MapSquare(Coordinate &ne, Coordinate &nw, Coordinate &se, Coordinate &sw, double aCentralX, double aCentralY);
+};
 
-    void updateTraversalPaths();
 
-private:
-
+class MapSquareHash {
+public:
+    size_t operator()(const MapSquare& mapSquare) const{
+        return mapSquare.UID;
+    }
 };
 
 

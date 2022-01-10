@@ -4,15 +4,12 @@
 
 #include <SDL_render.h>
 #include "MapDrawer.h"
-#include "../objects/Line.h"
 #include <cmath>
 
 void MapDrawer::drawMap() {
 
-    for(std::vector<MapSquare*> row : map->mapSquares){
-        for(MapSquare* mapSquare : row){
-            drawMapSquare(mapSquare);
-        }
+    for(MapSquare mapSquare : map->mapSquares){
+            drawMapSquare(&mapSquare);
     }
 
     for(Unit *unit : unitManager->units){
@@ -35,10 +32,10 @@ void MapDrawer::drawUnit(Unit *unit){
 
     applyRotation(&unitLocation);
     SDL_Rect rect;
-    rect.x = unitLocation.x - 1;
-    rect.y = unitLocation.y - 1;
-    rect.h = 2;
-    rect.w = 2;
+    rect.x = unitLocation.x - 2;
+    rect.y = unitLocation.y - 2;
+    rect.h = 4;
+    rect.w = 4;
 
     SDL_RenderDrawRect(renderer, &rect);
     //SDL_RenderDrawPoint(renderer, unitLocation.x, unitLocation.y);
@@ -46,10 +43,13 @@ void MapDrawer::drawUnit(Unit *unit){
 
 void MapDrawer::drawSelectedSquare(){
     SDL_SetRenderDrawColor (renderer , selectedSquareColour.r, selectedSquareColour.g, selectedSquareColour.b, selectedSquareColour.a);
-    Coordinate ne = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->northEast;
-    Coordinate nw = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->northWest;
-    Coordinate se = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->southEast;
-    Coordinate sw = map->mapSquares[map->selectedSquareX][map->selectedSquareY]->southWest;
+
+    MapSquare mapSquare = map->mapSquares[map->getIndexInto(map->selX, map->selY)];
+
+    Coordinate nw(mapSquare.centre.x - 0.5, mapSquare.centre.y - 0.5, mapSquare.heights.nw);
+    Coordinate ne(mapSquare.centre.x + 0.5, mapSquare.centre.y - 0.5, mapSquare.heights.ne);
+    Coordinate sw(mapSquare.centre.x - 0.5, mapSquare.centre.y + 0.5, mapSquare.heights.sw);
+    Coordinate se(mapSquare.centre.x + 0.5, mapSquare.centre.y + 0.5, mapSquare.heights.se);
 
     nw.x = (nw.x * tileSize) + offsetFromEdgeX;
     nw.y = (nw.y * tileSize) + offsetFromEdgeY;
@@ -75,10 +75,10 @@ void MapDrawer::drawMapSquare(MapSquare *mapSquare) {
 
     SDL_SetRenderDrawColor (renderer , mapColour.r, mapColour.g, mapColour.b, mapColour.a);
 
-    Coordinate ne = mapSquare->northEast;
-    Coordinate nw = mapSquare->northWest;
-    Coordinate se = mapSquare->southEast;
-    Coordinate sw = mapSquare->southWest;
+    Coordinate nw(mapSquare->centre.x - 0.5, mapSquare->centre.y - 0.5, mapSquare->heights.nw);
+    Coordinate ne(mapSquare->centre.x + 0.5, mapSquare->centre.y - 0.5, mapSquare->heights.ne);
+    Coordinate sw(mapSquare->centre.x - 0.5, mapSquare->centre.y + 0.5, mapSquare->heights.sw);
+    Coordinate se(mapSquare->centre.x + 0.5, mapSquare->centre.y + 0.5, mapSquare->heights.se);
 
     nw.x = (nw.x * tileSize) + offsetFromEdgeX;
     nw.y = (nw.y * tileSize) + offsetFromEdgeY;
@@ -148,13 +148,9 @@ void MapDrawer::applyRotation(Coordinate* coord) {
     double cx = coord->x - centralPoint.x;
     double cy = coord->y - centralPoint.y;
 
-    //TODO calculate these once for each rotation angle change
-    double cos_rot = cos(map->rotationAngle);
-    double sin_rot = sin(map->rotationAngle);
-
     //rotate
-    double rx = (cx * cos_rot) - (cy * sin_rot);
-    double ry = (cx * sin_rot) + (cy * cos_rot);
+    double rx = (cx * rotationAngleCos) - (cy * rotationAngleSin);
+    double ry = (cx * rotationAngleSin) + (cy * rotationAngleCos);
 
     //make isometric
     double px = (rx - ry);
@@ -201,4 +197,22 @@ MapDrawer::MapDrawer(SDL_Renderer *r, Map *aMap, UnitManager* aUnitManager, int 
     centralPoint.x = ceil(sx / 2);
     centralPoint.y = ceil(sy / 2);
 
+}
+
+void MapDrawer::rotateRight() {
+    rotationAngle += 0.001;
+    if(rotationAngle >= M_PI * 2){
+        rotationAngle = 0;
+    }
+    rotationAngleCos = cos(rotationAngle);
+    rotationAngleSin = sin(rotationAngle);
+}
+
+void MapDrawer::rotateLeft() {
+    rotationAngle -= 0.001;
+    if(rotationAngle < 0){
+        rotationAngle = 359;
+    }
+    rotationAngleCos = cos(rotationAngle);
+    rotationAngleSin = sin(rotationAngle);
 }
