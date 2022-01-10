@@ -21,12 +21,12 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0,20));
+            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0,30));
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
         }
     }
-
+    mapSquares[target].directionToTarget = TraversalVectors::TARGET;
 
     for (int i = 0; i < mapSizeX; ++i) {
 
@@ -41,11 +41,11 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
             }
             else if (i == 0 && j > 0){
                 mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.se;
+                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
             }
             else{
+                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
                 mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.se;
                 mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
             }
 
@@ -66,33 +66,37 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
             switch(mapSquares[getIndexInto(i, j)].directionToTarget){
 
                 case TraversalVectors::vectorN_S :
-                    line.append("↓  ");
+                    line.append("↓\t");
                     break;
                 case TraversalVectors::vectorS_N :
-                    line.append("↑  ");
+                    line.append("↑\t");
                     break;
                 case TraversalVectors::vectorNE_SW :
-                    line.append("⬋  ");
+                    line.append("⬋\t");
                     break;
                 case TraversalVectors::vectorSW_NE :
-                    line.append("⇗  ");
+                    line.append("↗\t");
                     break;
                 case TraversalVectors::vectorE_W :
-                    line.append("←  ");
+                    line.append("⬅\t");
                     break;
                 case TraversalVectors::vectorW_E :
-                    line.append("→  ");
+                    line.append("➡\t");
                     break;
                 case TraversalVectors::vectorSE_NW :
-                    line.append("⇱  ");
+                    line.append("↖\t");
                     break;
                 case TraversalVectors::vectorNW_SE :
-                    line.append("⇲  ");
+                    line.append("↘\t");
+                    break;
+                case TraversalVectors::TARGET :
+                    line.append("@\t");
                     break;
             }
         }
         line.append("\n");
         std::cout << line;
+
     }
 
 
@@ -107,7 +111,7 @@ void Map::updatePath(){
     }
 
     for(MapSquare start : mapSquares) {
-        if(start.hasUpdatedPath){
+        if(start.hasUpdatedPath || start.UID == target){
             // skip
         }
         else
@@ -145,18 +149,20 @@ void Map::updatePath(){
             // process the newly created path
 
             int previous = target;
-            int current = came_from[previous];
+            int current = 0;
+
             while (current != start.UID) {
+                current = came_from[previous];
                 if(mapSquares[current].hasUpdatedPath){
                     // skip - already has the best path
                 }
                 else{
-                    mapSquares[current].directionToTarget = getDirectionTo(mapSquares[current], mapSquares[previous]);
+                    mapSquares[current].directionToTarget = getDirectionTo(mapSquares[previous], mapSquares[current]);
                     mapSquares[current].hasUpdatedPath = true;
                 }
                 previous = current;
-                current = came_from[current];
             }
+
 
 
         }
@@ -345,38 +351,38 @@ void Map::moveSelectedSquare(DataTypes::Direction direction) {
  * returns the direction that points from MapSquare one towards MapSquare two
  */
 
-TraversalVectors::VectorDirection Map::getDirectionTo(MapSquare one, MapSquare two){
+TraversalVectors::VectorDirection Map::getDirectionTo(MapSquare from, MapSquare to){
     TraversalVectors::VectorDirection direction;
-    if(one.centre.x == two.centre.x){
+    if(from.centre.x == to.centre.x){
         //same column
-        if(one.centre.y == two.centre.y + 1){
+        if(from.centre.y == to.centre.y + 1){
             direction = TraversalVectors::vectorN_S;
         }
-        else if(one.centre.y == two.centre.y - 1){
+        else if(from.centre.y == to.centre.y - 1){
             direction = TraversalVectors::vectorS_N;
         }
     }
-    else if(one.centre.x == two.centre.x + 1){
+    else if(from.centre.x == to.centre.x + 1){
         // +1 on x
-        if(one.centre.y == two.centre.y){
+        if(from.centre.y == to.centre.y){
             direction = TraversalVectors::vectorW_E;
         }
-        else if(one.centre.y == two.centre.y + 1){
+        else if(from.centre.y == to.centre.y + 1){
             direction = TraversalVectors::vectorNW_SE;
         }
-        else if(one.centre.y == two.centre.y - 1){
+        else if(from.centre.y == to.centre.y - 1){
             direction = TraversalVectors::vectorSW_NE;
         }
     }
-    else if(one.centre.x == two.centre.x - 1){
+    else if(from.centre.x == to.centre.x - 1){
         // -1 on x
-        if(one.centre.y == two.centre.y){
+        if(from.centre.y == to.centre.y){
             direction = TraversalVectors::vectorE_W;
         }
-        else if(one.centre.y == two.centre.y + 1){
+        else if(from.centre.y == to.centre.y + 1){
             direction = TraversalVectors::vectorNE_SW;
         }
-        else if(one.centre.y == two.centre.y - 1){
+        else if(from.centre.y == to.centre.y - 1){
             direction = TraversalVectors::vectorSE_NW;
         }
     }
@@ -398,8 +404,10 @@ double Map::distanceBetween(MapSquare one, MapSquare two) {
     return M_SQRT2 * diagonalSteps + straightSteps;
 }
 
+//this should return the 'cost' of moving from one to two
+// i.e. if two is higher than one,
 double Map::heightDifference(MapSquare one, MapSquare two) {
-    return one.centre.z - two.centre.z;
+    return two.centre.z - one.centre.z;
 }
 
 double Map::heuristic(MapSquare one, MapSquare two){

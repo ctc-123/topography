@@ -17,8 +17,8 @@ int SDL_main(int argc, char *argv[])
     const int SCREEN_WIDTH = 1920;
     const int SCREEN_HEIGHT = 1080;
 
-    int mapSizeX = 10;
-    int mapSizeY = 10;
+    int mapSizeX = 40;
+    int mapSizeY = 40;
 
     SDL_Init ( SDL_INIT_VIDEO );
     SDL_Window *window = SDL_CreateWindow ( "MAP SQUARES", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );

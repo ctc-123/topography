@@ -24,7 +24,7 @@ public:
     Coordinate centre;
     const int UID;
     Heights heights{};
-    TraversalVectors::VectorDirection directionToTarget = TraversalVectors::vectorN_S;
+    TraversalVectors::VectorDirection directionToTarget = TraversalVectors::vectorS_N;
     bool hasUpdatedPath = false;
 
     inline bool operator<(MapSquare& rhs){return UID < rhs.UID;};

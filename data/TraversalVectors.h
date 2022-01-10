@@ -20,7 +20,9 @@ public:
                             vectorW_E ,
                             vectorSE_NW ,
                             vectorNW_SE,
-                            LAST};
+                            LAST,
+                            TARGET};
+
 
 
     static std::map<VectorDirection, Vector> vectorUV;

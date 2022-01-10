@@ -23,7 +23,7 @@ public:
     int selX = 0;
     int selY = 0;
 
-    int target = 88;
+    int target = 900;
 
     std::vector<MapSquare> mapSquares;
     Map(int aMapSizeX, int aMapSizeY);
@@ -41,7 +41,7 @@ private:
     static double distanceBetween(MapSquare one, MapSquare two);
     static double heightDifference(MapSquare one, MapSquare two);
     static double heuristic(MapSquare one, MapSquare two);
-    TraversalVectors::VectorDirection getDirectionTo(MapSquare one, MapSquare two);
+    TraversalVectors::VectorDirection getDirectionTo(MapSquare from, MapSquare to);
 
 
 };
