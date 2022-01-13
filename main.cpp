@@ -29,7 +29,7 @@ int SDL_main(int argc, char *argv[])
     Map map(mapSizeX, mapSizeY);
     InputHandler inputHandler;
     GameController gameController;
-    UnitManager unitManager(100);
+    UnitManager unitManager(1000);
     MapDrawer mapDrawer(renderer, &map, &unitManager, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     gameController.setMap(&map);
@@ -61,6 +61,7 @@ int SDL_main(int argc, char *argv[])
 
         mapDrawer.drawMap();
         gameController.rotateRight();
+        unitManager.update(&map);
 
         /* DEBUG - draw cross-hair
         SDL_SetRenderDrawColor (renderer , 255, 0, 0, 255 );

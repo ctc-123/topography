@@ -19,13 +19,29 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     mapSizeX = aMapSizeX;
     mapSizeY = aMapSizeY;
 
+
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0,30));
+
+
+            int height = 0;
+            if(((i > 5 && i < 10) && (j > 5 && j < 10))
+                || ((i > 15 && i < 20) && (j > 15 && j < 20))
+                || ((i > 30 && i < 35) && (j > 30 && j < 35))
+                || ((i > 5 && i < 10) && (j > 30 && j < 35))
+                || ((i > 30 && i < 35) && (j > 5 && j < 10))
+                || ((i > 25 && i < 30) && (j > 30 && j < 35))
+                || ((i > 30 && i < 35) && (j > 25 && j < 30))){
+                height = 30;
+            }
+
+            auto *centre = new Coordinate( i + 0.5, j + 0.5, height);
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
         }
     }
+
+
     mapSquares[target].directionToTarget = TraversalVectors::TARGET;
 
     for (int i = 0; i < mapSizeX; ++i) {
@@ -59,7 +75,7 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 
     updatePath();
 
-    //output paths
+    // DEBUG - output paths
     for (int j = 0; j < mapSizeY; ++j) {
         std::string line;
         for (int i = 0; i < mapSizeX; ++i) {
@@ -125,20 +141,26 @@ void Map::updatePath(){
             came_from[start.UID] = start.UID;
 
             cost_so_far[start.UID] = 0;
+            int final = 0;
 
             while (!frontier.empty()) {
                 int current = frontier.get();
 
-                // TODO check for .hasUpdatedPath - if so, stop looking and point current towards it
+
                 // if .hasUpdatedPath == true we have already found the best path onwards so just reuse it
                 if (mapSquares[current].UID == mapSquares[target].UID) {
+                    final = target;
                     break;
                 }
 
+                // TODO alg is too strongly in favour of avoiding climb
+                // how to make it favour fastest path to target more? possibly adding heuristic value to cost
                 for (MapSquare *next : neighbors(mapSquares[current].centre.x, mapSquares[current].centre.y)) {
-                    double new_cost = cost_so_far[current] + heightDifference(mapSquares[current], *next);
+                    int diff = heightDifference(mapSquares[current], *next);
+                    double new_cost = cost_so_far[current] + diff;
                     if (cost_so_far.find(next->UID) == cost_so_far.end()
                         || new_cost < cost_so_far[next->UID]) {
+                        mapSquares[current].speed = diff;
                         cost_so_far[next->UID] = new_cost;
                         double priority = new_cost + heuristic(mapSquares[next->UID],mapSquares[target]);
                         frontier.put(next->UID, priority);
@@ -146,10 +168,10 @@ void Map::updatePath(){
                     }
                 }
             }
-            // process the newly created path
 
-            int previous = target;
-            int current = 0;
+            // process the newly created path
+            int previous = final;
+            int current = -1;
 
             while (current != start.UID) {
                 current = came_from[previous];
@@ -195,6 +217,7 @@ int Map::createRandomHeight(int lowerBound, int upperBound)
 }
 
 void Map::changeSquareHeight(DataTypes::Direction direction){
+    //TODO update the central height value for any squares that are changed
     int change = (direction == DataTypes::UP) ? 3 : -3;
 
     int oldHeightNW = mapSquares[getIndexInto(selX, selY)].heights.nw;
@@ -404,15 +427,14 @@ double Map::distanceBetween(MapSquare one, MapSquare two) {
     return M_SQRT2 * diagonalSteps + straightSteps;
 }
 
-//this should return the 'cost' of moving from one to two
-// i.e. if two is higher than one,
 double Map::heightDifference(MapSquare one, MapSquare two) {
     return two.centre.z - one.centre.z;
 }
 
 double Map::heuristic(MapSquare one, MapSquare two){
     //expected that square two is a target square
-    // TODO any other factors that could improve heuristic?
+
+    // higher heuristic = less valuable
     return distanceBetween(one, two);
 }
 

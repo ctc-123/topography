@@ -21,34 +21,18 @@ struct Heights{
 class MapSquare {
 
 public:
-    Coordinate centre;
+    int speed = 0;
+    bool hasUpdatedPath = false;
     const int UID;
+    Coordinate centre;
     Heights heights{};
     TraversalVectors::VectorDirection directionToTarget = TraversalVectors::vectorS_N;
-    bool hasUpdatedPath = false;
-
-    inline bool operator<(MapSquare& rhs){return UID < rhs.UID;};
-    inline bool operator==(MapSquare& rhs){return UID == rhs.UID;};
-
 
     void calculateCentralHeight();
     MapSquare() : UID(0), centre(0,0,0){};
     MapSquare(Coordinate &aCentre, int aUID);
 
 };
-
-
-class MapSquareHash {
-public:
-    size_t operator()(const MapSquare& mapSquare) const{
-        return mapSquare.UID;
-    }
-};
-
-
-
-
-
 
 #endif //TOPOGRAPHY_MAPSQUARE_H
 

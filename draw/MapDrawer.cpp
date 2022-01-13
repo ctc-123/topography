@@ -17,6 +17,66 @@ void MapDrawer::drawMap() {
     }
 
     drawSelectedSquare();
+    drawTargetSquare();
+
+
+}
+
+void MapDrawer::drawTargetSquare()
+{
+    SDL_SetRenderDrawColor (renderer , 255, 255, 1, 255);
+    MapSquare target = map->mapSquares[map->target];
+    Coordinate baseNW(target.centre.x - 0.2, target.centre.y - 0.2,  target.centre.z);
+    Coordinate baseNE(target.centre.x + 0.2, target.centre.y - 0.2,  target.centre.z);
+    Coordinate baseSE(target.centre.x + 0.2, target.centre.y + 0.2,  target.centre.z);
+    Coordinate baseSW(target.centre.x - 0.2, target.centre.y + 0.2,  target.centre.z);
+
+    Coordinate topNW(target.centre.x - 0.2, target.centre.y - 0.2,  target.centre.z + 30);
+    Coordinate topNE(target.centre.x + 0.2, target.centre.y - 0.2,  target.centre.z + 30);
+    Coordinate topSE(target.centre.x + 0.2, target.centre.y + 0.2,  target.centre.z + 30);
+    Coordinate topSW(target.centre.x - 0.2, target.centre.y + 0.2,  target.centre.z + 30);
+
+    baseNW.x = (baseNW.x * tileSize) + offsetFromEdgeX;
+    baseNW.y = (baseNW.y * tileSize) + offsetFromEdgeY;
+    baseNE.x = (baseNE.x * tileSize) + offsetFromEdgeX;
+    baseNE.y = (baseNE.y * tileSize) + offsetFromEdgeY;
+    baseSE.x = (baseSE.x * tileSize) + offsetFromEdgeX;
+    baseSE.y = (baseSE.y * tileSize) + offsetFromEdgeY;
+    baseSW.x = (baseSW.x * tileSize) + offsetFromEdgeX;
+    baseSW.y = (baseSW.y * tileSize) + offsetFromEdgeY;
+
+    topNW.x = (topNW.x * tileSize) + offsetFromEdgeX;
+    topNW.y = (topNW.y * tileSize) + offsetFromEdgeY;
+    topNE.x = (topNE.x * tileSize) + offsetFromEdgeX;
+    topNE.y = (topNE.y * tileSize) + offsetFromEdgeY;
+    topSE.x = (topSE.x * tileSize) + offsetFromEdgeX;
+    topSE.y = (topSE.y * tileSize) + offsetFromEdgeY;
+    topSW.x = (topSW.x * tileSize) + offsetFromEdgeX;
+    topSW.y = (topSW.y * tileSize) + offsetFromEdgeY;
+    
+    applyRotation(&baseNW);
+    applyRotation(&baseNE);
+    applyRotation(&baseSE);
+    applyRotation(&baseSW);
+    applyRotation(&topNW);
+    applyRotation(&topNE);
+    applyRotation(&topSE);
+    applyRotation(&topSW);
+
+    SDL_RenderDrawLine(renderer, baseNW.x, baseNW.y, baseNE.x, baseNE.y);
+    SDL_RenderDrawLine(renderer, baseNE.x, baseNE.y, baseSE.x, baseSE.y);
+    SDL_RenderDrawLine(renderer, baseSE.x, baseSE.y, baseSW.x, baseSW.y);
+    SDL_RenderDrawLine(renderer, baseSW.x, baseSW.y, baseNW.x, baseNW.y);
+
+    SDL_RenderDrawLine(renderer, topNW.x, topNW.y, topNE.x, topNE.y);
+    SDL_RenderDrawLine(renderer, topNE.x, topNE.y, topSE.x, topSE.y);
+    SDL_RenderDrawLine(renderer, topSE.x, topSE.y, topSW.x, topSW.y);
+    SDL_RenderDrawLine(renderer, topSW.x, topSW.y, topNW.x, topNW.y);
+
+    SDL_RenderDrawLine(renderer, baseNW.x, baseNW.y, topNW.x, topNW.y);
+    SDL_RenderDrawLine(renderer, baseNE.x, baseNE.y, topNE.x, topNE.y);
+    SDL_RenderDrawLine(renderer, baseSE.x, baseSE.y, topSE.x, topSE.y);
+    SDL_RenderDrawLine(renderer, baseSW.x, baseSW.y, topSW.x, topSW.y);
 
 
 }
@@ -27,6 +87,7 @@ void MapDrawer::drawUnit(Unit *unit){
     Coordinate unitLocation;
     unitLocation.x = unit->location.x;
     unitLocation.y = unit->location.y;
+
     unitLocation.x = (unitLocation.x * tileSize) + offsetFromEdgeX;
     unitLocation.y = (unitLocation.y * tileSize) + offsetFromEdgeY;
 

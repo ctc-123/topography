@@ -23,7 +23,7 @@ public:
     int selX = 0;
     int selY = 0;
 
-    int target = 900;
+    int target = 1599;
 
     std::vector<MapSquare> mapSquares;
     Map(int aMapSizeX, int aMapSizeY);

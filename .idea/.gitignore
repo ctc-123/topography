@@ -1,0 +1,10 @@
+# Default ignored files
+/workspace.xml
+/cmake-build-debug/
+
+# User-specific stuff:
+
+/misc.xml
+/modules.xml
+/topography.xml
+/vcs.xml
