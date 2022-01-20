@@ -19,18 +19,19 @@ class Map {
 public:
     int mapSizeX = 0;
     int mapSizeY = 0;
-
     int selX = 0;
     int selY = 0;
-
-    int target = 1599;
-
+    int target = 0;
+    const int maxHeightDifference = 1000;
     std::vector<MapSquare> mapSquares;
     Map(int aMapSizeX, int aMapSizeY);
+    explicit Map(std::string &mapName);
 
     void moveSelectedSquare(DataTypes::Direction direction);
     void changeSquareHeight(DataTypes::Direction direction);
     int getIndexInto(int i, int j);
+    double heightDifference(MapSquare one, MapSquare two, double &diffOne, double &diffTwo);
+    int normaliseSpeed(int aSpeed);
 
 private:
 
@@ -39,9 +40,9 @@ private:
     void updatePath();
     std::vector<MapSquare*> neighbors(int i, int j);
     static double distanceBetween(MapSquare one, MapSquare two);
-    static double heightDifference(MapSquare one, MapSquare two);
     static double heuristic(MapSquare one, MapSquare two);
-    TraversalVectors::VectorDirection getDirectionTo(MapSquare from, MapSquare to);
+    static TraversalVectors::VectorDirection getDirectionTo(MapSquare from, MapSquare to);
+
 
 
 };

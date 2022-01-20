@@ -17,13 +17,19 @@
 class UnitManager {
 
 public:
-    UnitManager(int numOfUnits);
+    UnitManager(int numOfUnits, int mapSize);
 
     std::vector<Unit*> units;
     void update(Map *map);
+    void init(Map *map);
 
+private:
+    const double DIAGONAL_STEP_DISTANCE_HALF = 1.4142135623 / 2;
+    const double VERTICAL_HORIZONTAL_STEP_DISTANCE_HALF = 1.0 / 2;
+    int minNumOfSteps = 10;
+    int maxNumOfSteps = 90;
 
-
+    void updateUnit(Unit *unit, Map *map);
 };
 
 

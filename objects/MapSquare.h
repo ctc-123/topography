@@ -16,6 +16,10 @@ struct Heights{
     int nw;
     int se;
     int sw;
+    int e;
+    int w;
+    int n;
+    int s;
 };
 
 class MapSquare {
@@ -27,8 +31,9 @@ public:
     Coordinate centre;
     Heights heights{};
     TraversalVectors::VectorDirection directionToTarget = TraversalVectors::vectorS_N;
+    int intendedNextSquareUID = 0;
 
-    void calculateCentralHeight();
+    void update();
     MapSquare() : UID(0), centre(0,0,0){};
     MapSquare(Coordinate &aCentre, int aUID);
 

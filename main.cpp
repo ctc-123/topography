@@ -19,6 +19,7 @@ int SDL_main(int argc, char *argv[])
 
     int mapSizeX = 40;
     int mapSizeY = 40;
+    std::string mapName = "C:\\dev\\topography\\mapfiles\\map.csv";
 
     SDL_Init ( SDL_INIT_VIDEO );
     SDL_Window *window = SDL_CreateWindow ( "MAP SQUARES", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
@@ -27,11 +28,13 @@ int SDL_main(int argc, char *argv[])
     //ensure traversal vectors is init - this is a bit hacky?
     TraversalVectors();
     Map map(mapSizeX, mapSizeY);
+
     InputHandler inputHandler;
     GameController gameController;
-    UnitManager unitManager(1000);
+    UnitManager unitManager(1000, map.mapSizeX);
     MapDrawer mapDrawer(renderer, &map, &unitManager, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    unitManager.init(&map);
     gameController.setMap(&map);
     gameController.setMapDrawer(&mapDrawer);
     gameController.setUnitManager(&unitManager);

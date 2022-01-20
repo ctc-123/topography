@@ -30,6 +30,7 @@ public:
     TraversalVectors();
 
 
+    static bool isDiagonal(VectorDirection direction);
 };
 
 

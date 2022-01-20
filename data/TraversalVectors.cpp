@@ -18,6 +18,14 @@ TraversalVectors::TraversalVectors() {
 
 }
 
+bool TraversalVectors::isDiagonal(VectorDirection direction){
+    return !(direction == vectorN_S
+             || direction == vectorS_N
+             || direction == vectorE_W
+             || direction == vectorW_E);
+}
+
+
 /*
  * returns the vector direction enum for the direction *from* point represented by xOne,yOne *to* point xTwo, yTwo
  * assumes that the given points are adjacent to each other (including diagonally) and are aligned with a grid

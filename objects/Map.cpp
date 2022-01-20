@@ -6,6 +6,7 @@
 #include "../data/TraversalVectors.h"
 #include "Unit.h"
 #include "../data/PriorityQueue.h"
+#include "../controller/MapIOHandler.h"
 #include <cmath>
 #include <unordered_map>
 #include <set>
@@ -13,12 +14,90 @@
 #include <string>
 #include <iostream>
 
+Map::Map(std::string &mapName) {
+    mapSquares = MapIOHandler::getMap(mapName);
+
+    mapSizeX = static_cast<int>(sqrt(mapSquares.size()));
+    mapSizeY = mapSizeX;
+    target = (mapSizeX * mapSizeY) - 1;
+
+    mapSquares[target].directionToTarget = TraversalVectors::TARGET;
+
+    for (int i = 0; i < mapSizeX; ++i) {
+
+        for (int j = 0; j < mapSizeY; ++j) {
+
+            if(i == 0 && j == 0){
+                // do nothing
+            }
+            else if(i > 0 && j == 0){
+                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i - 1, j)].heights.ne;
+                mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
+            }
+            else if (i == 0 && j > 0){
+                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
+                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
+            }
+            else{
+                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
+                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
+                mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
+            }
+
+        }
+
+    }
+
+    for (int k = 0; k < mapSquares.size(); ++k) {
+        mapSquares[k].update();
+    }
+
+    updatePath();
+    for (int j = 0; j < mapSizeY; ++j) {
+        std::string line;
+        for (int i = 0; i < mapSizeX; ++i) {
+            switch(mapSquares[getIndexInto(i, j)].directionToTarget){
+
+                case TraversalVectors::vectorN_S :
+                    line.append("↓\t");
+                    break;
+                case TraversalVectors::vectorS_N :
+                    line.append("↑\t");
+                    break;
+                case TraversalVectors::vectorNE_SW :
+                    line.append("⬋\t");
+                    break;
+                case TraversalVectors::vectorSW_NE :
+                    line.append("↗\t");
+                    break;
+                case TraversalVectors::vectorE_W :
+                    line.append("⬅\t");
+                    break;
+                case TraversalVectors::vectorW_E :
+                    line.append("➡\t");
+                    break;
+                case TraversalVectors::vectorSE_NW :
+                    line.append("↖\t");
+                    break;
+                case TraversalVectors::vectorNW_SE :
+                    line.append("↘\t");
+                    break;
+                case TraversalVectors::TARGET :
+                    line.append("@\t");
+                    break;
+            }
+        }
+        line.append("\n");
+        std::cout << line;
+
+    }
+}
 
 Map::Map(int aMapSizeX, int aMapSizeY) {
 
     mapSizeX = aMapSizeX;
     mapSizeY = aMapSizeY;
-
+    target = (aMapSizeX * aMapSizeY) - 1;
 
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
@@ -35,7 +114,7 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
                 height = 30;
             }
 
-            auto *centre = new Coordinate( i + 0.5, j + 0.5, height);
+            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 40));
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
         }
@@ -70,7 +149,7 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     }
 
     for(MapSquare start : mapSquares) {
-        start.calculateCentralHeight();
+        start.update();
     }
 
     updatePath();
@@ -130,8 +209,7 @@ void Map::updatePath(){
         if(start.hasUpdatedPath || start.UID == target){
             // skip
         }
-        else
-        {
+        else {
             std::unordered_map<int, int> came_from;
             std::unordered_map<int, double> cost_so_far;
 
@@ -147,7 +225,6 @@ void Map::updatePath(){
                 int current = frontier.get();
 
 
-                // if .hasUpdatedPath == true we have already found the best path onwards so just reuse it
                 if (mapSquares[current].UID == mapSquares[target].UID) {
                     final = target;
                     break;
@@ -156,13 +233,15 @@ void Map::updatePath(){
                 // TODO alg is too strongly in favour of avoiding climb
                 // how to make it favour fastest path to target more? possibly adding heuristic value to cost
                 for (MapSquare *next : neighbors(mapSquares[current].centre.x, mapSquares[current].centre.y)) {
-                    int diff = heightDifference(mapSquares[current], *next);
+                    double diffOne;
+                    double diffTwo;
+                    int diff = heightDifference(mapSquares[current], *next, diffOne, diffTwo);
                     double new_cost = cost_so_far[current] + diff;
                     if (cost_so_far.find(next->UID) == cost_so_far.end()
                         || new_cost < cost_so_far[next->UID]) {
-                        mapSquares[current].speed = diff;
+                        mapSquares[current].speed = normaliseSpeed(diff);
                         cost_so_far[next->UID] = new_cost;
-                        double priority = new_cost + heuristic(mapSquares[next->UID],mapSquares[target]);
+                        double priority = new_cost;
                         frontier.put(next->UID, priority);
                         came_from[next->UID] = current;
                     }
@@ -175,22 +254,31 @@ void Map::updatePath(){
 
             while (current != start.UID) {
                 current = came_from[previous];
-                if(mapSquares[current].hasUpdatedPath){
+                if (mapSquares[current].hasUpdatedPath) {
                     // skip - already has the best path
-                }
-                else{
+                } else {
                     mapSquares[current].directionToTarget = getDirectionTo(mapSquares[previous], mapSquares[current]);
                     mapSquares[current].hasUpdatedPath = true;
+                    mapSquares[current].intendedNextSquareUID = previous;
                 }
                 previous = current;
             }
-
 
 
         }
 
 
     }
+}
+
+int Map::normaliseSpeed(int aSpeed){
+
+    int fromMin = -1000;
+    int fromMax = 1000;
+    int toMin = 1;
+    int toMax = 100;
+
+    return ((aSpeed - fromMin) * (toMax - toMin)) / ((fromMax - fromMin) + toMin);
 }
 
 std::vector<MapSquare*> Map::neighbors(int i, int j){
@@ -427,8 +515,80 @@ double Map::distanceBetween(MapSquare one, MapSquare two) {
     return M_SQRT2 * diagonalSteps + straightSteps;
 }
 
-double Map::heightDifference(MapSquare one, MapSquare two) {
-    return two.centre.z - one.centre.z;
+double Map::heightDifference(MapSquare one, MapSquare two, double &diffOne, double &diffTwo) {
+
+    TraversalVectors::VectorDirection direction;
+    TraversalVectors::getDirectionForConnection(one.centre.x, one.centre.y, two.centre.x, two.centre.y, direction);
+    bool isDiagonal = false;
+    diffOne = 0;
+    diffTwo = 0;
+
+    switch (direction){
+        case TraversalVectors::vectorN_S :
+            diffOne = one.heights.s - one.centre.z;
+            diffTwo = two.centre.z - two.heights.n;
+            break;
+        case TraversalVectors::vectorS_N :
+            diffOne = one.heights.n - one.centre.z;
+            diffTwo = two.centre.z - two.heights.s;
+            break;
+        case TraversalVectors::vectorE_W :
+            diffOne = one.heights.w - one.centre.z;
+            diffTwo = two.centre.z - two.heights.e;
+            break;
+        case TraversalVectors::vectorW_E :
+            diffOne = one.heights.e - one.centre.z;
+            diffTwo = two.centre.z - two.heights.w;
+            break;
+        case TraversalVectors::vectorNE_SW :
+            diffOne = one.heights.sw - one.centre.z;
+            diffTwo = two.centre.z - two.heights.ne;
+            isDiagonal = true;
+            break;
+        case TraversalVectors::vectorNW_SE:
+            diffOne = one.heights.se - one.centre.z;
+            diffTwo = two.centre.z - two.heights.nw;
+            isDiagonal = true;
+            break;
+        case TraversalVectors::vectorSE_NW:
+            diffOne = one.heights.nw - one.centre.z;
+            diffTwo = two.centre.z - two.heights.se;
+            isDiagonal = true;
+            break;
+        case TraversalVectors::vectorSW_NE:
+            diffOne = one.heights.ne - one.centre.z;
+            diffTwo = two.centre.z - two.heights.sw;
+            isDiagonal = true;
+            break;
+
+    }
+
+    if(diffOne < 0){
+        diffOne = abs(diffOne);
+    }
+    else if(diffOne > 0){
+        diffOne = diffOne * 2;
+    }
+    else{
+        diffOne = 1;
+    }
+
+    if(diffTwo < 0){
+        diffTwo = abs(diffTwo);
+    }
+    else if(diffTwo > 0){
+        diffTwo = diffTwo * 2;
+    }
+    else{
+        diffTwo = 1;
+    }
+
+
+    if(isDiagonal){
+        return (diffOne + diffTwo) * 1.41421; // TODO does this math make sense?
+    }
+
+    return diffOne + diffTwo;
 }
 
 double Map::heuristic(MapSquare one, MapSquare two){

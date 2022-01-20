@@ -82,21 +82,23 @@ void MapDrawer::drawTargetSquare()
 }
 
 void MapDrawer::drawUnit(Unit *unit){
-    SDL_SetRenderDrawColor (renderer , 255, 1, 255, 255);
+    SDL_SetRenderDrawColor (renderer , 255, 1, 1, 255);
 
     Coordinate unitLocation;
     unitLocation.x = unit->location.x;
     unitLocation.y = unit->location.y;
+    unitLocation.z = unit->location.z;
 
     unitLocation.x = (unitLocation.x * tileSize) + offsetFromEdgeX;
     unitLocation.y = (unitLocation.y * tileSize) + offsetFromEdgeY;
 
+
     applyRotation(&unitLocation);
     SDL_Rect rect;
-    rect.x = unitLocation.x - 2;
-    rect.y = unitLocation.y - 2;
-    rect.h = 4;
-    rect.w = 4;
+    rect.x = unitLocation.x - 3;
+    rect.y = unitLocation.y - 3;
+    rect.h = 6;
+    rect.w = 6;
 
     SDL_RenderDrawRect(renderer, &rect);
     //SDL_RenderDrawPoint(renderer, unitLocation.x, unitLocation.y);
