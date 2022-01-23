@@ -31,17 +31,17 @@ Map::Map(std::string &mapName) {
                 // do nothing
             }
             else if(i > 0 && j == 0){
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i - 1, j)].heights.ne;
-                mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
+                getAt(i, j)->heights.nw = getAt(i - 1, j)->heights.ne;
+                getAt(i, j)->heights.sw = getAt(i - 1, j)->heights.se;
             }
             else if (i == 0 && j > 0){
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
-                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
+                getAt(i, j)->heights.nw = getAt(i, j - 1)->heights.sw;
+                getAt(i, j)->heights.ne = getAt(i, j - 1)->heights.se;
             }
             else{
-                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
-                mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
+                getAt(i, j)->heights.ne = getAt(i, j - 1)->heights.se;
+                getAt(i, j)->heights.nw = getAt(i, j - 1)->heights.sw;
+                getAt(i, j)->heights.sw = getAt(i - 1, j)->heights.se;
             }
 
         }
@@ -53,45 +53,10 @@ Map::Map(std::string &mapName) {
     }
 
     updatePath();
-    for (int j = 0; j < mapSizeY; ++j) {
-        std::string line;
-        for (int i = 0; i < mapSizeX; ++i) {
-            switch(mapSquares[getIndexInto(i, j)].directionToTarget){
 
-                case TraversalVectors::vectorN_S :
-                    line.append("↓\t");
-                    break;
-                case TraversalVectors::vectorS_N :
-                    line.append("↑\t");
-                    break;
-                case TraversalVectors::vectorNE_SW :
-                    line.append("⬋\t");
-                    break;
-                case TraversalVectors::vectorSW_NE :
-                    line.append("↗\t");
-                    break;
-                case TraversalVectors::vectorE_W :
-                    line.append("⬅\t");
-                    break;
-                case TraversalVectors::vectorW_E :
-                    line.append("➡\t");
-                    break;
-                case TraversalVectors::vectorSE_NW :
-                    line.append("↖\t");
-                    break;
-                case TraversalVectors::vectorNW_SE :
-                    line.append("↘\t");
-                    break;
-                case TraversalVectors::TARGET :
-                    line.append("@\t");
-                    break;
-            }
-        }
-        line.append("\n");
-        std::cout << line;
-
-    }
 }
+
+
 
 Map::Map(int aMapSizeX, int aMapSizeY) {
 
@@ -101,19 +66,6 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-
-
-            int height = 0;
-            if(((i > 5 && i < 10) && (j > 5 && j < 10))
-                || ((i > 15 && i < 20) && (j > 15 && j < 20))
-                || ((i > 30 && i < 35) && (j > 30 && j < 35))
-                || ((i > 5 && i < 10) && (j > 30 && j < 35))
-                || ((i > 30 && i < 35) && (j > 5 && j < 10))
-                || ((i > 25 && i < 30) && (j > 30 && j < 35))
-                || ((i > 30 && i < 35) && (j > 25 && j < 30))){
-                height = 30;
-            }
-
             auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 40));
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
@@ -126,75 +78,31 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     for (int i = 0; i < mapSizeX; ++i) {
 
         for (int j = 0; j < mapSizeY; ++j) {
-
+            // TODO refactor
             if(i == 0 && j == 0){
                 // do nothing
             }
             else if(i > 0 && j == 0){
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i - 1, j)].heights.ne;
-                mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
+                getAt(i, j)->heights.nw = getAt(i - 1, j)->heights.ne;
+                getAt(i, j)->heights.sw = getAt(i - 1, j)->heights.se;
             }
             else if (i == 0 && j > 0){
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
-                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
+                getAt(i, j)->heights.nw = getAt(i, j - 1)->heights.sw;
+                getAt(i, j)->heights.ne = getAt(i, j - 1)->heights.se;
             }
             else{
-                mapSquares[getIndexInto(i, j)].heights.ne = mapSquares[getIndexInto(i, j - 1)].heights.se;
-                mapSquares[getIndexInto(i, j)].heights.nw = mapSquares[getIndexInto(i, j - 1)].heights.sw;
-                mapSquares[getIndexInto(i, j)].heights.sw = mapSquares[getIndexInto(i - 1, j)].heights.se;
+                getAt(i, j)->heights.ne = getAt(i, j - 1)->heights.se;
+                getAt(i, j)->heights.nw = getAt(i, j - 1)->heights.sw;
+                getAt(i, j)->heights.sw = getAt(i - 1, j)->heights.se;
             }
-
         }
-
     }
 
-    for(MapSquare start : mapSquares) {
-        start.update();
+    for (int k = 0; k < mapSquares.size(); ++k) {
+        mapSquares[k].update();
     }
 
     updatePath();
-
-    // DEBUG - output paths
-    for (int j = 0; j < mapSizeY; ++j) {
-        std::string line;
-        for (int i = 0; i < mapSizeX; ++i) {
-            switch(mapSquares[getIndexInto(i, j)].directionToTarget){
-
-                case TraversalVectors::vectorN_S :
-                    line.append("↓\t");
-                    break;
-                case TraversalVectors::vectorS_N :
-                    line.append("↑\t");
-                    break;
-                case TraversalVectors::vectorNE_SW :
-                    line.append("⬋\t");
-                    break;
-                case TraversalVectors::vectorSW_NE :
-                    line.append("↗\t");
-                    break;
-                case TraversalVectors::vectorE_W :
-                    line.append("⬅\t");
-                    break;
-                case TraversalVectors::vectorW_E :
-                    line.append("➡\t");
-                    break;
-                case TraversalVectors::vectorSE_NW :
-                    line.append("↖\t");
-                    break;
-                case TraversalVectors::vectorNW_SE :
-                    line.append("↘\t");
-                    break;
-                case TraversalVectors::TARGET :
-                    line.append("@\t");
-                    break;
-            }
-        }
-        line.append("\n");
-        std::cout << line;
-
-    }
-
-
 
 }
 
@@ -288,7 +196,7 @@ std::vector<MapSquare*> Map::neighbors(int i, int j){
             //attempt to add connections for all squares in all directions
             if(isValidMapIndex(i + x, j + y)
                 && !(x == 0 && y == 0)){
-                neighbors.push_back(&mapSquares[getIndexInto(i + x, j + y)]);
+                neighbors.push_back(getAt(i + x, j + y));
             }
         }
     }
@@ -297,6 +205,14 @@ std::vector<MapSquare*> Map::neighbors(int i, int j){
 
 int Map::getIndexInto(int i, int j){
     return (i * mapSizeX) + j;
+}
+
+MapSquare* Map::getAt(int UID){
+    return &mapSquares.at(UID);
+}
+
+MapSquare* Map::getAt(int i, int j){
+    return &mapSquares.at(getIndexInto(i, j));
 }
 
 int Map::createRandomHeight(int lowerBound, int upperBound)
@@ -308,10 +224,10 @@ void Map::changeSquareHeight(DataTypes::Direction direction){
     //TODO update the central height value for any squares that are changed
     int change = (direction == DataTypes::UP) ? 3 : -3;
 
-    int oldHeightNW = mapSquares[getIndexInto(selX, selY)].heights.nw;
-    int oldHeightNE = mapSquares[getIndexInto(selX, selY)].heights.ne;
-    int oldHeightSW = mapSquares[getIndexInto(selX, selY)].heights.sw;
-    int oldHeightSE = mapSquares[getIndexInto(selX, selY)].heights.se;
+    int oldHeightNW = getAt(selX, selY)->heights.nw;
+    int oldHeightNE = getAt(selX, selY)->heights.ne;
+    int oldHeightSW = getAt(selX, selY)->heights.sw;
+    int oldHeightSE = getAt(selX, selY)->heights.se;
     int newHeightNW = 0;
     int newHeightNE = 0;
     int newHeightSW = 0;
@@ -390,38 +306,38 @@ void Map::changeSquareHeight(DataTypes::Direction direction){
     }
 
 
-    mapSquares[getIndexInto(selX, selY)].heights.nw = newHeightNW;
-    mapSquares[getIndexInto(selX, selY)].heights.ne = newHeightNE;
-    mapSquares[getIndexInto(selX, selY)].heights.sw = newHeightSW;
-    mapSquares[getIndexInto(selX, selY)].heights.se = newHeightSE;
+    getAt(selX, selY)->heights.nw = newHeightNW;
+    getAt(selX, selY)->heights.ne = newHeightNE;
+    getAt(selX, selY)->heights.sw = newHeightSW;
+    getAt(selX, selY)->heights.se = newHeightSE;
 
     if(selX - 1 >= 0){
-        mapSquares[getIndexInto(selX - 1, selY)].heights.ne = newHeightNW;
-        mapSquares[getIndexInto(selX - 1, selY)].heights.se = newHeightSW;
+        getAt(selX - 1, selY)->heights.ne = newHeightNW;
+        getAt(selX - 1, selY)->heights.se = newHeightSW;
         if(selY - 1 >= 0){
-            mapSquares[getIndexInto(selX - 1, selY - 1)].heights.se = newHeightNW;
+            getAt(selX - 1, selY - 1)->heights.se = newHeightNW;
         }
         if(selY + 1 < mapSizeY){
-            mapSquares[getIndexInto(selX - 1, selY + 1)].heights.ne = newHeightSW;
+            getAt(selX - 1, selY + 1)->heights.ne = newHeightSW;
         }
     }
     if(selX + 1 < mapSizeX){
-        mapSquares[getIndexInto(selX + 1, selY)].heights.nw = newHeightNE;
-        mapSquares[getIndexInto(selX + 1, selY)].heights.sw = newHeightSE;
+        getAt(selX + 1, selY)->heights.nw = newHeightNE;
+        getAt(selX + 1, selY)->heights.sw = newHeightSE;
         if(selY - 1 >= 0){
-            mapSquares[getIndexInto(selX + 1, selY - 1)].heights.sw = newHeightNE;
+            getAt(selX + 1, selY - 1)->heights.sw = newHeightNE;
         }
         if(selY + 1 < mapSizeY){
-            mapSquares[getIndexInto(selX + 1, selY + 1)].heights.nw = newHeightSE;
+            getAt(selX + 1, selY + 1)->heights.nw = newHeightSE;
         }
     }
     if(selY - 1 >= 0){
-        mapSquares[getIndexInto(selX, selY -1)].heights.sw = newHeightNW;
-        mapSquares[getIndexInto(selX, selY -1)].heights.se = newHeightNE;
+        getAt(selX, selY - 1)->heights.sw = newHeightNW;
+        getAt(selX, selY - 1)->heights.se = newHeightNE;
     }
     if(selY + 1 < mapSizeY){
-        mapSquares[getIndexInto(selX, selY + 1)].heights.nw = newHeightSW;
-        mapSquares[getIndexInto(selX, selY + 1)].heights.ne = newHeightSE;
+        getAt(selX, selY + 1)->heights.nw = newHeightSW;
+        getAt(selX, selY + 1)->heights.ne = newHeightSE;
     }
 
 }
@@ -515,13 +431,13 @@ double Map::distanceBetween(MapSquare one, MapSquare two) {
     return M_SQRT2 * diagonalSteps + straightSteps;
 }
 
-double Map::heightDifference(MapSquare one, MapSquare two, double &diffOne, double &diffTwo) {
+double Map::heightDifference(MapSquare one, MapSquare two, double &aDiffOne, double &aDiffTwo) {
 
     TraversalVectors::VectorDirection direction;
     TraversalVectors::getDirectionForConnection(one.centre.x, one.centre.y, two.centre.x, two.centre.y, direction);
     bool isDiagonal = false;
-    diffOne = 0;
-    diffTwo = 0;
+    double diffOne = 0;
+    double diffTwo = 0;
 
     switch (direction){
         case TraversalVectors::vectorN_S :
@@ -563,6 +479,9 @@ double Map::heightDifference(MapSquare one, MapSquare two, double &diffOne, doub
 
     }
 
+    aDiffOne = diffOne;
+    aDiffTwo = diffTwo;
+
     if(diffOne < 0){
         diffOne = abs(diffOne);
     }
@@ -590,6 +509,48 @@ double Map::heightDifference(MapSquare one, MapSquare two, double &diffOne, doub
 
     return diffOne + diffTwo;
 }
+
+void Map::printDirections(){
+    for (int j = 0; j < mapSizeY; ++j) {
+        std::string line;
+        for (int i = 0; i < mapSizeX; ++i) {
+            switch(getAt(i, j)->directionToTarget){
+
+                case TraversalVectors::vectorN_S :
+                    line.append("↓\t");
+                    break;
+                case TraversalVectors::vectorS_N :
+                    line.append("↑\t");
+                    break;
+                case TraversalVectors::vectorNE_SW :
+                    line.append("⬋\t");
+                    break;
+                case TraversalVectors::vectorSW_NE :
+                    line.append("↗\t");
+                    break;
+                case TraversalVectors::vectorE_W :
+                    line.append("⬅\t");
+                    break;
+                case TraversalVectors::vectorW_E :
+                    line.append("➡\t");
+                    break;
+                case TraversalVectors::vectorSE_NW :
+                    line.append("↖\t");
+                    break;
+                case TraversalVectors::vectorNW_SE :
+                    line.append("↘\t");
+                    break;
+                case TraversalVectors::TARGET :
+                    line.append("@\t");
+                    break;
+            }
+        }
+        line.append("\n");
+        std::cout << line;
+
+    }
+}
+
 
 double Map::heuristic(MapSquare one, MapSquare two){
     //expected that square two is a target square

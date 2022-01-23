@@ -18,10 +18,11 @@ MapSquare::MapSquare(Coordinate &aCentre, int aUID) :  centre(aCentre), UID(aUID
 }
 
 void MapSquare::update() {
-    this->centre.z = floor((heights.ne + heights.nw + heights.se + heights.sw) / 4);
     this->heights.n = (heights.nw + heights.ne) / 2;
     this->heights.e = (heights.ne + heights.se) / 2;
     this->heights.s = (heights.sw + heights.se) / 2;
     this->heights.w = (heights.nw + heights.sw) / 2;
+    this->centre.z = floor((heights.ne + heights.nw + heights.se + heights.sw
+            + heights.e + heights.w + heights.s + heights.n ) / 8.0);
 }
 

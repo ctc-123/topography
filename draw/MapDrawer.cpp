@@ -107,12 +107,12 @@ void MapDrawer::drawUnit(Unit *unit){
 void MapDrawer::drawSelectedSquare(){
     SDL_SetRenderDrawColor (renderer , selectedSquareColour.r, selectedSquareColour.g, selectedSquareColour.b, selectedSquareColour.a);
 
-    MapSquare mapSquare = map->mapSquares[map->getIndexInto(map->selX, map->selY)];
+    MapSquare *mapSquare = map->getAt(map->selX, map->selY);
 
-    Coordinate nw(mapSquare.centre.x - 0.5, mapSquare.centre.y - 0.5, mapSquare.heights.nw);
-    Coordinate ne(mapSquare.centre.x + 0.5, mapSquare.centre.y - 0.5, mapSquare.heights.ne);
-    Coordinate sw(mapSquare.centre.x - 0.5, mapSquare.centre.y + 0.5, mapSquare.heights.sw);
-    Coordinate se(mapSquare.centre.x + 0.5, mapSquare.centre.y + 0.5, mapSquare.heights.se);
+    Coordinate nw(mapSquare->centre.x - 0.5, mapSquare->centre.y - 0.5, mapSquare->heights.nw);
+    Coordinate ne(mapSquare->centre.x + 0.5, mapSquare->centre.y - 0.5, mapSquare->heights.ne);
+    Coordinate sw(mapSquare->centre.x - 0.5, mapSquare->centre.y + 0.5, mapSquare->heights.sw);
+    Coordinate se(mapSquare->centre.x + 0.5, mapSquare->centre.y + 0.5, mapSquare->heights.se);
 
     nw.x = (nw.x * tileSize) + offsetFromEdgeX;
     nw.y = (nw.y * tileSize) + offsetFromEdgeY;

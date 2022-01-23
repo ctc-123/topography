@@ -29,12 +29,14 @@ public:
 
     void moveSelectedSquare(DataTypes::Direction direction);
     void changeSquareHeight(DataTypes::Direction direction);
-    int getIndexInto(int i, int j);
     double heightDifference(MapSquare one, MapSquare two, double &diffOne, double &diffTwo);
     int normaliseSpeed(int aSpeed);
+    MapSquare *getAt(int i, int j);
+    MapSquare *getAt(int UID);
 
 private:
 
+    int getIndexInto(int i, int j);
     static int createRandomHeight(int lowerBound, int upperBound);
     bool isValidMapIndex(int i, int j);
     void updatePath();
@@ -43,6 +45,8 @@ private:
     static double heuristic(MapSquare one, MapSquare two);
     static TraversalVectors::VectorDirection getDirectionTo(MapSquare from, MapSquare to);
 
+
+    void printDirections();
 
 
 };
