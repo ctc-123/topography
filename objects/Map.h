@@ -17,36 +17,39 @@
 class Map {
 
 public:
+
     int mapSizeX = 0;
     int mapSizeY = 0;
     int selX = 0;
     int selY = 0;
     int target = 0;
-    const int maxHeightDifference = 1000;
+
     std::vector<MapSquare> mapSquares;
     Map(int aMapSizeX, int aMapSizeY);
     explicit Map(std::string &mapName);
 
     void moveSelectedSquare(DataTypes::Direction direction);
     void changeSquareHeight(DataTypes::Direction direction);
-    double heightDifference(MapSquare one, MapSquare two, double &diffOne, double &diffTwo);
+    int heightDifference(int UIDOne, int UIDTwo);
+    int heightDifference(int UIDOne, int UIDTwo, int &aDiffOne, int &aDiffTwo);
     int normaliseSpeed(int aSpeed);
     MapSquare *getAt(int i, int j);
     MapSquare *getAt(int UID);
 
 private:
-
+    int lastUID = 0;
     int getIndexInto(int i, int j);
     static int createRandomHeight(int lowerBound, int upperBound);
     bool isValidMapIndex(int i, int j);
+    void connectSquares();
     void updatePath();
-    std::vector<MapSquare*> neighbors(int i, int j);
-    static double distanceBetween(MapSquare one, MapSquare two);
-    static double heuristic(MapSquare one, MapSquare two);
+    void getNeighbors(int UID, int *UIDs, int &numOfUIDs);
+    std::vector<MapSquare*> getNeighbors(int i, int j);
     static TraversalVectors::VectorDirection getDirectionTo(MapSquare from, MapSquare to);
-
-
     void printDirections();
+
+
+    bool isValidUID(int UID);
 
 
 };

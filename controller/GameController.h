@@ -35,6 +35,8 @@ public:
 
     void update();
 
+    void togglePaused();
+
 private:
     void changeSquareHeight(DataTypes::Direction direction);
     void moveMapSelection(DataTypes::Direction direction);
@@ -44,8 +46,7 @@ private:
     bool moveSelectionDownPressed = false;
     bool raiseSelectionPressed = false;
     bool lowerSelectionPressed = false;
-
-
+    bool paused = false;
 
 
 };

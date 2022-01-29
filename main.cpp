@@ -17,8 +17,8 @@ int SDL_main(int argc, char *argv[])
     const int SCREEN_WIDTH = 1920;
     const int SCREEN_HEIGHT = 1080;
 
-    int mapSizeX = 100;
-    int mapSizeY = 100;
+    int mapSizeX = 50;
+    int mapSizeY = 50;
     std::string mapName = "C:\\dev\\topography\\mapfiles\\map.csv";
 
     SDL_Init ( SDL_INIT_VIDEO );
@@ -64,8 +64,6 @@ int SDL_main(int argc, char *argv[])
         gameController.update();
 
         mapDrawer.drawMap();
-        gameController.rotateRight();
-        unitManager.update(&map);
 
         /* DEBUG - draw cross-hair
         SDL_SetRenderDrawColor (renderer , 255, 0, 0, 255 );

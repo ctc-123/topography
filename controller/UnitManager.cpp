@@ -41,9 +41,9 @@ void UnitManager::updateUnit(Unit *unit, Map *map){
 
     // find the total num of steps that should be taken
     // fewer steps = quicker movement
-    double diffOne = 0;
-    double diffTwo = 0;
-    map->heightDifference(*occupiedSquare, *nextSquare, diffOne, diffTwo);
+    int diffOne = 0;
+    int diffTwo = 0;
+    map->heightDifference( unit->occupiedSquareUID, nextSquare->UID, diffOne, diffTwo);
 
     unit->stepsTakenOne = 0;
     unit->stepsTakenTwo = 0;
@@ -51,8 +51,8 @@ void UnitManager::updateUnit(Unit *unit, Map *map){
 
     unit->totalNumOfStepsOne = minNumOfSteps + (maxNumOfSteps - map->normaliseSpeed(diffOne));
     unit->totalNumOfStepsTwo = minNumOfSteps + (maxNumOfSteps - map->normaliseSpeed(diffTwo));
-    unit->stepHeightOne = diffOne / unit->totalNumOfStepsOne;
-    unit->stepHeightTwo = diffTwo / unit->totalNumOfStepsTwo;
+    unit->stepHeightOne = static_cast<double>(diffOne) / unit->totalNumOfStepsOne;
+    unit->stepHeightTwo = static_cast<double>(diffTwo) / unit->totalNumOfStepsTwo;
     unit->location.z = occupiedSquare->centre.z;
 
 
@@ -69,15 +69,14 @@ void UnitManager::updateUnit(Unit *unit, Map *map){
 }
 
 
-// TODO figure out how to use mapSquare height to set unit.z
 // TODO remember to make step sizes different for diagonal movement
-// TODO calculate "heightStep" e.g. divide height difference for transition between
 void UnitManager::update(Map *map) {
+
     for(Unit* unit : units){
         //move the unit along its path
 
         if(unit->occupiedSquareUID == map->target){
-            // do nothing
+            // erase unit?
         } else{
 
 

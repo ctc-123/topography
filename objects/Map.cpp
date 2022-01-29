@@ -13,13 +13,15 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <chrono>
 
 Map::Map(std::string &mapName) {
     mapSquares = MapIOHandler::getMap(mapName);
 
     mapSizeX = static_cast<int>(sqrt(mapSquares.size()));
     mapSizeY = mapSizeX;
-    target = (mapSizeX * mapSizeY) - 1;
+    lastUID = (mapSizeX * mapSizeY) - 1;
+    target = lastUID;
 
     mapSquares[target].directionToTarget = TraversalVectors::TARGET;
 
@@ -52,6 +54,8 @@ Map::Map(std::string &mapName) {
         mapSquares[k].update();
     }
 
+    connectSquares();
+
     updatePath();
 
 }
@@ -62,18 +66,20 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 
     mapSizeX = aMapSizeX;
     mapSizeY = aMapSizeY;
-    target = (aMapSizeX * aMapSizeY) - 1;
+    lastUID = (mapSizeX * mapSizeY) - 1;
+    target = lastUID;
+
 
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 40));
+            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 20));
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
         }
     }
 
 
-    mapSquares[target].directionToTarget = TraversalVectors::TARGET;
+    mapSquares.at(target).directionToTarget = TraversalVectors::TARGET;
 
     for (int i = 0; i < mapSizeX; ++i) {
 
@@ -98,30 +104,111 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
         }
     }
 
-    for (int k = 0; k < mapSquares.size(); ++k) {
-        mapSquares[k].update();
+    for (int UID = 0; UID < lastUID; UID++) {
+        getAt(UID)->update();
     }
+
+   connectSquares();
 
     updatePath();
 
 }
 
+void Map::connectSquares(){
+    for (int i = 0; i < mapSizeX; ++i) {
+        for (int j = 0; j < mapSizeY; ++j) {
+
+            if (i == 0 && j > 0){
+                // first column - and after first row
+                // connect to N
+                int diff = heightDifference(getAt(i, j)->UID, getAt(i, j - 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i, j - 1)->UID] = diff;
+                diff = heightDifference(getAt(i, j - 1)->UID, getAt(i, j)->UID);
+                getAt(i, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+            }
+            else if(i > 0 && j == 0){
+                // after first column, and on first row
+                // connect to squares to W, SW
+                int diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+                diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j + 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j + 1)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j + 1)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j + 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+            }
+            else if(i > 0 && j > 0 && j < mapSizeY - 1){
+                // after first column and after first row
+                // connect to squares to N, NW, W, SW
+                int diff = heightDifference(getAt(i, j)->UID, getAt(i, j - 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i, j - 1)->UID] = diff;
+                diff = heightDifference(getAt(i, j - 1)->UID, getAt(i, j)->UID);
+                getAt(i, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+                diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j - 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j - 1)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j - 1)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+                diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+                diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j + 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j + 1)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j + 1)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j + 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+            }
+            else if(j == mapSizeY - 1){
+                // on bottom row
+                // connect to square N, NW, W
+
+                int diff = heightDifference(getAt(i, j)->UID, getAt(i, j - 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i, j - 1)->UID] = diff;
+                diff = heightDifference(getAt(i, j - 1)->UID, getAt(i, j)->UID);
+                getAt(i, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+                diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j - 1)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j - 1)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j - 1)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+
+                diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j)->UID);
+                getAt(i, j)->heightDiffTo[getAt(i - 1, j)->UID] = diff;
+                diff = heightDifference(getAt(i - 1, j)->UID, getAt(i, j)->UID);
+                getAt(i - 1, j)->heightDiffTo[getAt(i, j)->UID] = diff;
+            }
+            else{
+                // ?
+            }
+
+        }
+
+    }
+}
+
 void Map::updatePath(){
 
+    auto start_time_total = std::chrono::system_clock::now();
 
     for(MapSquare start : mapSquares) {
         start.hasUpdatedPath = false;
     }
 
     for(MapSquare start : mapSquares) {
+        auto start_time = std::chrono::system_clock::now();
         if(start.hasUpdatedPath || start.UID == target){
             // skip
         }
         else {
             std::unordered_map<int, int> came_from;
-            std::unordered_map<int, double> cost_so_far;
+            std::unordered_map<int, int> cost_so_far;
 
-            PriorityQueue<int, double> frontier;
+            PriorityQueue<int, int> frontier;
             frontier.put(start.UID, 0);
 
             came_from[start.UID] = start.UID;
@@ -132,26 +219,24 @@ void Map::updatePath(){
             while (!frontier.empty()) {
                 int current = frontier.get();
 
-
                 if (mapSquares[current].UID == mapSquares[target].UID) {
                     final = target;
                     break;
                 }
 
-                // TODO alg is too strongly in favour of avoiding climb
-                // how to make it favour fastest path to target more? possibly adding heuristic value to cost
-                for (MapSquare *next : neighbors(mapSquares[current].centre.x, mapSquares[current].centre.y)) {
-                    double diffOne;
-                    double diffTwo;
-                    int diff = heightDifference(mapSquares[current], *next, diffOne, diffTwo);
-                    double new_cost = cost_so_far[current] + diff;
-                    if (cost_so_far.find(next->UID) == cost_so_far.end()
-                        || new_cost < cost_so_far[next->UID]) {
+                for (std::pair<int, int> neighbor : getAt(current)->heightDiffTo)
+                {
+                    int nextUID = neighbor.first;
+
+                    int diff = neighbor.second;
+                    int new_cost = cost_so_far[current] + diff;
+                    if (cost_so_far.find(nextUID) == cost_so_far.end()
+                        || new_cost < cost_so_far[nextUID]) {
                         mapSquares[current].speed = normaliseSpeed(diff);
-                        cost_so_far[next->UID] = new_cost;
-                        double priority = new_cost;
-                        frontier.put(next->UID, priority);
-                        came_from[next->UID] = current;
+                        cost_so_far[nextUID] = new_cost;
+                        int priority = new_cost;
+                        frontier.put(nextUID, priority);
+                        came_from[nextUID] = current;
                     }
                 }
             }
@@ -175,8 +260,15 @@ void Map::updatePath(){
 
         }
 
-
+        auto end = std::chrono::system_clock::now();
+        auto elapsed = end - start_time;
+        std::cout << elapsed.count() << '\n' << std::flush;
     }
+
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = end - start_time_total;
+    std::cout << elapsed.count() << '\n' << std::flush;
+    printDirections();
 }
 
 int Map::normaliseSpeed(int aSpeed){
@@ -189,11 +281,11 @@ int Map::normaliseSpeed(int aSpeed){
     return ((aSpeed - fromMin) * (toMax - toMin)) / ((fromMax - fromMin) + toMin);
 }
 
-std::vector<MapSquare*> Map::neighbors(int i, int j){
+std::vector<MapSquare*> Map::getNeighbors(int i, int j){
     std::vector<MapSquare*> neighbors;
     for (int x = -1; x <= 1; ++x) {
         for (int y = -1; y <= 1; ++y) {
-            //attempt to add connections for all squares in all directions
+            //attempt to add heightDiffTo for all squares in all directions
             if(isValidMapIndex(i + x, j + y)
                 && !(x == 0 && y == 0)){
                 neighbors.push_back(getAt(i + x, j + y));
@@ -413,70 +505,69 @@ TraversalVectors::VectorDirection Map::getDirectionTo(MapSquare from, MapSquare 
             direction = TraversalVectors::vectorSE_NW;
         }
     }
+    else{
+        //shouldnt be here?
+        int i = 0;
+    }
+
     return direction;
 }
 
 
 
-double Map::distanceBetween(MapSquare one, MapSquare two) {
-    int dx = abs(two.centre.x - one.centre.x);
-    int dy = abs(two.centre.y - one.centre.y);
-
-    int min = std::min(dx, dy);
-    int max = std::max(dx, dy);
-
-    int diagonalSteps = min;
-    int straightSteps = max - min;
-
-    return M_SQRT2 * diagonalSteps + straightSteps;
-}
-
-double Map::heightDifference(MapSquare one, MapSquare two, double &aDiffOne, double &aDiffTwo) {
+int Map::heightDifference(int UIDOne, int UIDTwo, int &aDiffOne, int &aDiffTwo) {
 
     TraversalVectors::VectorDirection direction;
-    TraversalVectors::getDirectionForConnection(one.centre.x, one.centre.y, two.centre.x, two.centre.y, direction);
+    MapSquare *one = getAt(UIDOne);
+    MapSquare *two = getAt(UIDTwo);
+
+    TraversalVectors::getDirectionForConnection(one->centre.x, one->centre.y, two->centre.x, two->centre.y, direction);
     bool isDiagonal = false;
-    double diffOne = 0;
-    double diffTwo = 0;
+    int diffOne = 0;
+    int diffTwo = 0;
 
     switch (direction){
         case TraversalVectors::vectorN_S :
-            diffOne = one.heights.s - one.centre.z;
-            diffTwo = two.centre.z - two.heights.n;
+            diffOne = one->heights.s - one->centre.z;
+            diffTwo = two->centre.z - two->heights.n;
             break;
         case TraversalVectors::vectorS_N :
-            diffOne = one.heights.n - one.centre.z;
-            diffTwo = two.centre.z - two.heights.s;
+            diffOne = one->heights.n - one->centre.z;
+            diffTwo = two->centre.z - two->heights.s;
             break;
         case TraversalVectors::vectorE_W :
-            diffOne = one.heights.w - one.centre.z;
-            diffTwo = two.centre.z - two.heights.e;
+            diffOne = one->heights.w - one->centre.z;
+            diffTwo = two->centre.z - two->heights.e;
             break;
         case TraversalVectors::vectorW_E :
-            diffOne = one.heights.e - one.centre.z;
-            diffTwo = two.centre.z - two.heights.w;
+            diffOne = one->heights.e - one->centre.z;
+            diffTwo = two->centre.z - two->heights.w;
             break;
         case TraversalVectors::vectorNE_SW :
-            diffOne = one.heights.sw - one.centre.z;
-            diffTwo = two.centre.z - two.heights.ne;
+            diffOne = one->heights.sw - one->centre.z;
+            diffTwo = two->centre.z - two->heights.ne;
             isDiagonal = true;
             break;
         case TraversalVectors::vectorNW_SE:
-            diffOne = one.heights.se - one.centre.z;
-            diffTwo = two.centre.z - two.heights.nw;
+            diffOne = one->heights.se - one->centre.z;
+            diffTwo = two->centre.z - two->heights.nw;
             isDiagonal = true;
             break;
         case TraversalVectors::vectorSE_NW:
-            diffOne = one.heights.nw - one.centre.z;
-            diffTwo = two.centre.z - two.heights.se;
+            diffOne = one->heights.nw - one->centre.z;
+            diffTwo = two->centre.z - two->heights.se;
             isDiagonal = true;
             break;
         case TraversalVectors::vectorSW_NE:
-            diffOne = one.heights.ne - one.centre.z;
-            diffTwo = two.centre.z - two.heights.sw;
+            diffOne = one->heights.ne - one->centre.z;
+            diffTwo = two->centre.z - two->heights.sw;
             isDiagonal = true;
             break;
 
+        case TraversalVectors::LAST :
+        case TraversalVectors::TARGET :
+            // should never happen
+            break;
     }
 
     aDiffOne = diffOne;
@@ -510,12 +601,17 @@ double Map::heightDifference(MapSquare one, MapSquare two, double &aDiffOne, dou
     return diffOne + diffTwo;
 }
 
+int Map::heightDifference(int UIDOne, int UIDTwo) {
+    int diffOne = 0;
+    int diffTwo = 0;
+    return heightDifference(UIDOne, UIDTwo, diffOne, diffTwo);
+}
+
 void Map::printDirections(){
     for (int j = 0; j < mapSizeY; ++j) {
         std::string line;
         for (int i = 0; i < mapSizeX; ++i) {
             switch(getAt(i, j)->directionToTarget){
-
                 case TraversalVectors::vectorN_S :
                     line.append("↓\t");
                     break;
@@ -543,20 +639,18 @@ void Map::printDirections(){
                 case TraversalVectors::TARGET :
                     line.append("@\t");
                     break;
+                default:
+                    line.append("X\t");
+                    break;
             }
         }
         line.append("\n");
-        std::cout << line;
-
+        std::cout << line << std::flush;
     }
 }
 
-
-double Map::heuristic(MapSquare one, MapSquare two){
-    //expected that square two is a target square
-
-    // higher heuristic = less valuable
-    return distanceBetween(one, two);
+bool Map::isValidUID(int UID){
+    return (UID >= 0 && UID <= lastUID);
 }
 
 bool Map::isValidMapIndex(int i, int j) {
@@ -568,4 +662,6 @@ bool Map::isValidMapIndex(int i, int j) {
     }
     return true;
 }
+
+
 

@@ -85,6 +85,7 @@ void MapDrawer::drawUnit(Unit *unit){
     SDL_SetRenderDrawColor (renderer , 255, 1, 1, 255);
 
     Coordinate unitLocation;
+
     unitLocation.x = unit->location.x;
     unitLocation.y = unit->location.y;
     unitLocation.z = unit->location.z;
@@ -95,10 +96,10 @@ void MapDrawer::drawUnit(Unit *unit){
 
     applyRotation(&unitLocation);
     SDL_Rect rect;
-    rect.x = unitLocation.x - 3;
-    rect.y = unitLocation.y - 3;
-    rect.h = 6;
-    rect.w = 6;
+    rect.x = unitLocation.x - 1;
+    rect.y = unitLocation.y - 1;
+    rect.h = 2;
+    rect.w = 2;
 
     SDL_RenderDrawRect(renderer, &rect);
     //SDL_RenderDrawPoint(renderer, unitLocation.x, unitLocation.y);

@@ -12,19 +12,23 @@ void InputHandler::setGameController(GameController *_gameController) {
 
 
 void InputHandler::handleInput(SDL_Event &event) {
-    if(event.type == SDL_MOUSEBUTTONDOWN ||
-        event.type == SDL_MOUSEBUTTONUP){
-        handleMouseClick(event.button);
+
+    switch(event.type) {
+        case SDL_MOUSEBUTTONDOWN :
+        case SDL_MOUSEBUTTONUP :
+            handleMouseClick(event.button);
+            break;
+        case SDL_KEYDOWN :
+            handleKeyboardEventDown(event.key);
+            break;
+        case SDL_KEYUP :
+            handleKeyboardEventUp(event.key);
+            break;
+        case SDL_MOUSEWHEEL :
+            handleScrollEvent(event.wheel);
+            break;
     }
-    else if(event.type == SDL_KEYDOWN){
-        handleKeyboardEventDown(event.key);
-    }
-    else if(event.type == SDL_KEYUP){
-        handleKeyboardEventUp(event.key);
-    }
-    else if(event.type == SDL_MOUSEWHEEL){
-        handleScrollEvent(event.wheel);
-    }
+
 }
 
 void InputHandler::handleScrollEvent(SDL_MouseWheelEvent event){
@@ -46,46 +50,55 @@ void InputHandler::handleMouseClick(SDL_MouseButtonEvent &event) {
 
 void InputHandler::handleKeyboardEventUp(SDL_KeyboardEvent &event){
     SDL_Keysym key = event.keysym;
-    if(key.scancode == SDL_SCANCODE_LEFT){
-        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_LEFT);
-    }
-    else if(key.scancode == SDL_SCANCODE_RIGHT){
-        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_RIGHT);
-    }
-    else if(key.scancode == SDL_SCANCODE_DOWN){
-        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_DOWN);
-    }
-    else if(key.scancode == SDL_SCANCODE_UP){
-        gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_UP);
-    }
-    else if(key.scancode == SDL_SCANCODE_SPACE){
-        gameController->setButtonReleased(ButtonMap::RAISE_SELECTION);
-    }
-    else if(key.scancode == SDL_SCANCODE_LCTRL){
-        gameController->setButtonReleased(ButtonMap::LOWER_SELECTION);
+    switch (key.scancode) {
+        case SDL_SCANCODE_LEFT :
+            gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_LEFT);
+            break;
+        case SDL_SCANCODE_RIGHT :
+            gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_RIGHT);
+            break;
+        case SDL_SCANCODE_DOWN :
+            gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_DOWN);
+            break;
+        case SDL_SCANCODE_UP :
+            gameController->setButtonReleased(ButtonMap::MOVE_SELECTION_UP);
+            break;
+        case SDL_SCANCODE_SPACE :
+            gameController->setButtonReleased(ButtonMap::RAISE_SELECTION);
+            break;
+        case SDL_SCANCODE_LCTRL :
+            gameController->setButtonReleased(ButtonMap::LOWER_SELECTION);
+            break;
     }
 }
 
 void InputHandler::handleKeyboardEventDown(SDL_KeyboardEvent &event) {
     SDL_Keysym key = event.keysym;
 
-    if(key.scancode == SDL_SCANCODE_LEFT){
-        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_LEFT);
+    switch (key.scancode){
+        case SDL_SCANCODE_LEFT :
+            gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_LEFT);
+            break;
+        case SDL_SCANCODE_RIGHT :
+            gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_RIGHT);
+            break;
+        case SDL_SCANCODE_DOWN :
+            gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_DOWN);
+            break;
+        case SDL_SCANCODE_UP :
+            gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_UP);
+            break;
+        case SDL_SCANCODE_SPACE :
+            gameController->setButtonPressed(ButtonMap::RAISE_SELECTION);
+            break;
+        case SDL_SCANCODE_LCTRL :
+            gameController->setButtonPressed(ButtonMap::LOWER_SELECTION);
+            break;
+        case SDL_SCANCODE_P :
+            gameController->togglePaused();
+            break;
+
     }
-    else if(key.scancode == SDL_SCANCODE_RIGHT){
-        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_RIGHT);
-    }
-    else if(key.scancode == SDL_SCANCODE_DOWN){
-        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_DOWN);
-    }
-    else if(key.scancode == SDL_SCANCODE_UP){
-        gameController->setButtonPressed(ButtonMap::MOVE_SELECTION_UP);
-    }
-    else if(key.scancode == SDL_SCANCODE_SPACE){
-        gameController->setButtonPressed(ButtonMap::RAISE_SELECTION);
-    }
-    else if(key.scancode == SDL_SCANCODE_LCTRL){
-        gameController->setButtonPressed(ButtonMap::LOWER_SELECTION);
-    }
+
 
 }

@@ -12,14 +12,18 @@ GameController::GameController() {
 }
 
 void GameController::update(){
-    if(moveSelectionLeftPressed){moveMapSelection(DataTypes::LEFT);}
-    if(moveSelectionRightPressed){moveMapSelection(DataTypes::RIGHT);}
-    if(moveSelectionUpPressed){moveMapSelection(DataTypes::UP);}
-    if(moveSelectionDownPressed){moveMapSelection(DataTypes::DOWN);}
-    if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
-    if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
+    if(!paused){
+        if(moveSelectionLeftPressed){moveMapSelection(DataTypes::LEFT);}
+        if(moveSelectionRightPressed){moveMapSelection(DataTypes::RIGHT);}
+        if(moveSelectionUpPressed){moveMapSelection(DataTypes::UP);}
+        if(moveSelectionDownPressed){moveMapSelection(DataTypes::DOWN);}
+        if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
+        if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
 
-    unitManager->update(map);
+        unitManager->update(map);
+
+        rotateRight();
+    }
 }
 
 void GameController::setButtonPressed(ButtonMap::button button){
@@ -66,6 +70,10 @@ void GameController::setButtonReleased(ButtonMap::button button){
             lowerSelectionPressed = false;
             break;
     }
+}
+
+void GameController::togglePaused(){
+    paused = !paused;
 }
 
 void GameController::changeSquareHeight(DataTypes::Direction direction){

@@ -9,6 +9,7 @@
 #include <vector>
 #include "Coordinate.h"
 #include "../data/TraversalVectors.h"
+#include <unordered_map>
 
 
 struct Heights{
@@ -30,7 +31,9 @@ public:
     const int UID;
     Coordinate centre;
     Heights heights{};
-    TraversalVectors::VectorDirection directionToTarget = TraversalVectors::vectorS_N;
+    std::unordered_map<int, int> heightDiffTo;
+
+    TraversalVectors::VectorDirection directionToTarget = TraversalVectors::LAST;
     int intendedNextSquareUID = 0;
 
     void update();
