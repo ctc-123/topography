@@ -10,6 +10,7 @@
 #include <cmath>
 #include <unordered_map>
 #include <set>
+#include <list>
 #include <algorithm>
 #include <string>
 #include <iostream>
@@ -56,7 +57,8 @@ Map::Map(std::string &mapName) {
 
     connectSquares();
 
-    updatePath();
+    calculateIntegrationField();
+
 
 }
 
@@ -72,7 +74,7 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 20));
+            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 10));
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
         }
@@ -108,10 +110,9 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
         getAt(UID)->update();
     }
 
-   connectSquares();
-
-    updatePath();
-
+    connectSquares();
+    calculateIntegrationField();
+    printDirections();
 }
 
 void Map::connectSquares(){
@@ -122,45 +123,45 @@ void Map::connectSquares(){
                 // first column - and after first row
                 // connect to N
                 int diff = heightDifference(getAt(i, j)->UID, getAt(i, j - 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i, j - 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i, j - 1)->UID] = diff;
                 diff = heightDifference(getAt(i, j - 1)->UID, getAt(i, j)->UID);
-                getAt(i, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i, j - 1)->neighbors[getAt(i, j)->UID] = diff;
             }
             else if(i > 0 && j == 0){
                 // after first column, and on first row
                 // connect to squares to W, SW
                 int diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j)->neighbors[getAt(i, j)->UID] = diff;
 
                 diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j + 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j + 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j + 1)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j + 1)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j + 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j + 1)->neighbors[getAt(i, j)->UID] = diff;
             }
             else if(i > 0 && j > 0 && j < mapSizeY - 1){
                 // after first column and after first row
                 // connect to squares to N, NW, W, SW
                 int diff = heightDifference(getAt(i, j)->UID, getAt(i, j - 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i, j - 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i, j - 1)->UID] = diff;
                 diff = heightDifference(getAt(i, j - 1)->UID, getAt(i, j)->UID);
-                getAt(i, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i, j - 1)->neighbors[getAt(i, j)->UID] = diff;
 
                 diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j - 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j - 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j - 1)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j - 1)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j - 1)->neighbors[getAt(i, j)->UID] = diff;
 
                 diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j)->neighbors[getAt(i, j)->UID] = diff;
 
                 diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j + 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j + 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j + 1)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j + 1)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j + 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j + 1)->neighbors[getAt(i, j)->UID] = diff;
 
             }
             else if(j == mapSizeY - 1){
@@ -168,19 +169,19 @@ void Map::connectSquares(){
                 // connect to square N, NW, W
 
                 int diff = heightDifference(getAt(i, j)->UID, getAt(i, j - 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i, j - 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i, j - 1)->UID] = diff;
                 diff = heightDifference(getAt(i, j - 1)->UID, getAt(i, j)->UID);
-                getAt(i, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i, j - 1)->neighbors[getAt(i, j)->UID] = diff;
 
                 diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j - 1)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j - 1)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j - 1)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j - 1)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j - 1)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j - 1)->neighbors[getAt(i, j)->UID] = diff;
 
                 diff = heightDifference(getAt(i, j)->UID, getAt(i - 1, j)->UID);
-                getAt(i, j)->heightDiffTo[getAt(i - 1, j)->UID] = diff;
+                getAt(i, j)->neighbors[getAt(i - 1, j)->UID] = diff;
                 diff = heightDifference(getAt(i - 1, j)->UID, getAt(i, j)->UID);
-                getAt(i - 1, j)->heightDiffTo[getAt(i, j)->UID] = diff;
+                getAt(i - 1, j)->neighbors[getAt(i, j)->UID] = diff;
             }
             else{
                 // ?
@@ -189,6 +190,52 @@ void Map::connectSquares(){
         }
 
     }
+}
+
+void Map::calculateIntegrationField()
+{
+    auto start_time_total = std::chrono::system_clock::now();
+
+    std::list<int> openList;
+
+    //Set goal node cost to 0 and add it to the open list
+    getAt(target)->score = 0;
+    openList.push_back(target);
+
+    while (!openList.empty())
+    {
+        //Get the next node in the open list
+        unsigned currentID = openList.front();
+        openList.pop_front();
+
+        //Iterate through the neighbors of the current node
+        for (std::pair<int, int> neighbor : getAt(currentID)->neighbors)
+        {
+            int neighborID = neighbor.first;
+            //Calculate the new cost of the neighbor node
+            // based on the cost of the current node and the weight of the next node
+            unsigned int endNodeCost = getAt(currentID)->score + getAt(neighborID)->neighbors[currentID];
+
+            //If a shorter path has been found, add the node into the open list
+            if (endNodeCost < getAt(neighborID)->score)
+            {
+                //Check if the neighbor cell is already in the list.
+                //If it is not then add it to the end of the list.
+                if (! (std::find(openList.begin(), openList.end(), neighborID) != openList.end()))
+                {
+                    mapSquares[neighborID].directionToTarget = getDirectionTo(mapSquares[currentID], mapSquares[neighborID]);
+                    mapSquares[neighborID].intendedNextSquareUID = currentID;
+                    openList.push_back(neighborID);
+                }
+
+                //Set the new cost of the neighbor node.
+                getAt(neighborID)->score = endNodeCost;
+            }
+        }
+    }
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = end - start_time_total;
+    std::cout << elapsed.count() << '\n' << std::flush;
 }
 
 void Map::updatePath(){
@@ -224,7 +271,7 @@ void Map::updatePath(){
                     break;
                 }
 
-                for (std::pair<int, int> neighbor : getAt(current)->heightDiffTo)
+                for (std::pair<int, int> neighbor : getAt(current)->neighbors)
                 {
                     int nextUID = neighbor.first;
 
@@ -232,7 +279,7 @@ void Map::updatePath(){
                     int new_cost = cost_so_far[current] + diff;
                     if (cost_so_far.find(nextUID) == cost_so_far.end()
                         || new_cost < cost_so_far[nextUID]) {
-                        mapSquares[current].speed = normaliseSpeed(diff);
+                        mapSquares[current].score = normaliseSpeed(diff);
                         cost_so_far[nextUID] = new_cost;
                         int priority = new_cost;
                         frontier.put(nextUID, priority);
@@ -268,7 +315,6 @@ void Map::updatePath(){
     auto end = std::chrono::system_clock::now();
     auto elapsed = end - start_time_total;
     std::cout << elapsed.count() << '\n' << std::flush;
-    printDirections();
 }
 
 int Map::normaliseSpeed(int aSpeed){
@@ -285,7 +331,7 @@ std::vector<MapSquare*> Map::getNeighbors(int i, int j){
     std::vector<MapSquare*> neighbors;
     for (int x = -1; x <= 1; ++x) {
         for (int y = -1; y <= 1; ++y) {
-            //attempt to add heightDiffTo for all squares in all directions
+            //attempt to add neighbors for all squares in all directions
             if(isValidMapIndex(i + x, j + y)
                 && !(x == 0 && y == 0)){
                 neighbors.push_back(getAt(i + x, j + y));
@@ -595,7 +641,7 @@ int Map::heightDifference(int UIDOne, int UIDTwo, int &aDiffOne, int &aDiffTwo) 
 
 
     if(isDiagonal){
-        return (diffOne + diffTwo) * 1.41421; // TODO does this math make sense?
+        return (diffOne + diffTwo) * 1.4; // TODO does this math make sense?
     }
 
     return diffOne + diffTwo;

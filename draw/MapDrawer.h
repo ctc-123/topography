@@ -26,7 +26,8 @@ public:
     double zoomScale = 1.0;
     Coordinate centralPoint;
 
-    SDL_Color mapColour{0, 255,0,0};
+    SDL_Color unitColour{255, 0, 0, 0};
+    SDL_Color mapColour{0, 255,0,255};
     SDL_Color selectedSquareColour{255, 0, 0, 0};
 
     MapDrawer(SDL_Renderer *r, Map *aMap, UnitManager* aUnitManager, int aScreenSizeX, int aScreenSizeY);

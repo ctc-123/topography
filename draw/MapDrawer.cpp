@@ -82,8 +82,7 @@ void MapDrawer::drawTargetSquare()
 }
 
 void MapDrawer::drawUnit(Unit *unit){
-    SDL_SetRenderDrawColor (renderer , 255, 1, 1, 255);
-
+    SDL_SetRenderDrawColor (renderer , unitColour.r, unitColour.g, unitColour.b, unitColour.a);
     Coordinate unitLocation;
 
     unitLocation.x = unit->location.x;

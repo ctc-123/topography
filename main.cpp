@@ -17,8 +17,8 @@ int SDL_main(int argc, char *argv[])
     const int SCREEN_WIDTH = 1920;
     const int SCREEN_HEIGHT = 1080;
 
-    int mapSizeX = 50;
-    int mapSizeY = 50;
+    int mapSizeX = 100;
+    int mapSizeY = 100;
     std::string mapName = "C:\\dev\\topography\\mapfiles\\map.csv";
 
     SDL_Init ( SDL_INIT_VIDEO );
@@ -27,8 +27,8 @@ int SDL_main(int argc, char *argv[])
 
     //ensure traversal vectors is init - this is a bit hacky?
     TraversalVectors();
-    Map map(mapSizeX, mapSizeY);
-    //Map map(mapName);
+    //Map map(mapSizeX, mapSizeY);
+    Map map(mapName);
 
     InputHandler inputHandler;
     GameController gameController;

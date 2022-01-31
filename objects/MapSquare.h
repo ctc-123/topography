@@ -26,12 +26,12 @@ struct Heights{
 class MapSquare {
 
 public:
-    int speed = 0;
+    int score = INT32_MAX;
     bool hasUpdatedPath = false;
     const int UID;
     Coordinate centre;
     Heights heights{};
-    std::unordered_map<int, int> heightDiffTo;
+    std::unordered_map<int, int> neighbors;
 
     TraversalVectors::VectorDirection directionToTarget = TraversalVectors::LAST;
     int intendedNextSquareUID = 0;

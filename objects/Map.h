@@ -52,6 +52,7 @@ private:
     bool isValidUID(int UID);
 
 
+    void calculateIntegrationField();
 };
 
 
