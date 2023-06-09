@@ -11,6 +11,8 @@ class DataTypes {
 public:
 
     enum Direction{LEFT, RIGHT, UP, DOWN};
+
+    enum GameState{PAUSED, RUNNING};
 };
 
 

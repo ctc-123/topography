@@ -12,17 +12,30 @@ GameController::GameController() {
 }
 
 void GameController::update(){
-    if(!paused){
-        if(moveSelectionLeftPressed){moveMapSelection(DataTypes::LEFT);}
-        if(moveSelectionRightPressed){moveMapSelection(DataTypes::RIGHT);}
-        if(moveSelectionUpPressed){moveMapSelection(DataTypes::UP);}
-        if(moveSelectionDownPressed){moveMapSelection(DataTypes::DOWN);}
-        if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
-        if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
 
+    doTick();
+
+    if(state == DataTypes::RUNNING){
+
+        if(updateRequired){
+            if(moveSelectionLeftPressed){moveMapSelection(DataTypes::LEFT);}
+            if(moveSelectionRightPressed){moveMapSelection(DataTypes::RIGHT);}
+            if(moveSelectionUpPressed){moveMapSelection(DataTypes::UP);}
+            if(moveSelectionDownPressed){moveMapSelection(DataTypes::DOWN);}
+            if(raiseSelectionPressed){changeSquareHeight(DataTypes::UP);}
+            if(lowerSelectionPressed){changeSquareHeight(DataTypes::DOWN);}
+        }
+        updateRequired = false;
         unitManager->update(map);
-
         rotateRight();
+    }
+}
+
+void GameController::doTick(){
+    tick++;
+    if(tick >= updatePerTick){
+        tick = 0;
+        updateRequired = true;
     }
 }
 
@@ -73,7 +86,17 @@ void GameController::setButtonReleased(ButtonMap::button button){
 }
 
 void GameController::togglePaused(){
-    paused = !paused;
+    if(state == DataTypes::RUNNING){
+        setState(DataTypes::PAUSED);
+    }
+    else if(state == DataTypes::PAUSED){
+        setState(DataTypes::RUNNING);
+    }
+
+}
+
+void GameController::setState(DataTypes::GameState aState){
+    state = aState;
 }
 
 void GameController::changeSquareHeight(DataTypes::Direction direction){

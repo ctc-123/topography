@@ -51,6 +51,8 @@ private:
     void drawUnit(Unit *unit);
 
     void drawTargetSquare();
+
+    void drawDirection(MapSquare *mapSquare);
 };
 
 

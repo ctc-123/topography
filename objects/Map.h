@@ -23,6 +23,7 @@ public:
     int selX = 0;
     int selY = 0;
     int target = 0;
+    int maxHeightDiff = 0;
 
     std::vector<MapSquare> mapSquares;
     Map(int aMapSizeX, int aMapSizeY);

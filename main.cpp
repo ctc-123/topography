@@ -17,8 +17,8 @@ int SDL_main(int argc, char *argv[])
     const int SCREEN_WIDTH = 1920;
     const int SCREEN_HEIGHT = 1080;
 
-    int mapSizeX = 100;
-    int mapSizeY = 100;
+    int mapSizeX = 50;
+    int mapSizeY = 50;
     std::string mapName = "C:\\dev\\topography\\mapfiles\\map.csv";
 
     SDL_Init ( SDL_INIT_VIDEO );
@@ -27,8 +27,8 @@ int SDL_main(int argc, char *argv[])
 
     //ensure traversal vectors is init - this is a bit hacky?
     TraversalVectors();
-    //Map map(mapSizeX, mapSizeY);
-    Map map(mapName);
+    Map map(mapSizeX, mapSizeY);
+    //Map map(mapName);
 
     InputHandler inputHandler;
     GameController gameController;
@@ -45,9 +45,12 @@ int SDL_main(int argc, char *argv[])
 
     bool is_running = true;
 
+    Uint64 ticks = 0;
+
     SDL_RenderClear ( renderer );
     while ( is_running )
     {
+        ticks = SDL_GetTicks64();
         SDL_Event event;
         while ( SDL_PollEvent( &event ))
         {
@@ -74,7 +77,10 @@ int SDL_main(int argc, char *argv[])
         SDL_UpdateWindowSurface(window);
         SDL_RenderPresent ( renderer );
 
-        SDL_Delay(7);
+        Uint64 elapsedTicks = SDL_GetTicks64() - ticks;
+        if(elapsedTicks < 10){
+            SDL_Delay(10 - elapsedTicks);
+        }
 
         SDL_SetRenderDrawColor ( renderer,0,0,0,255 );
         SDL_RenderClear ( renderer );

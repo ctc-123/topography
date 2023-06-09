@@ -17,7 +17,8 @@
 #include <chrono>
 
 Map::Map(std::string &mapName) {
-    mapSquares = MapIOHandler::getMap(mapName);
+
+    mapSquares = MapIOHandler::getMap(mapName, maxHeightDiff);
 
     mapSizeX = static_cast<int>(sqrt(mapSquares.size()));
     mapSizeY = mapSizeX;
@@ -70,11 +71,13 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
     mapSizeY = aMapSizeY;
     lastUID = (mapSizeX * mapSizeY) - 1;
     target = lastUID;
-
+    int maxHeight = 10;
+    int minHeight = 0;
+    maxHeightDiff = maxHeight - minHeight;
 
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(0, 10));
+            auto *centre = new Coordinate( i + 0.5, j + 0.5, createRandomHeight(minHeight, maxHeight));
             MapSquare square(*centre, (i * mapSizeX) + j);
             mapSquares.push_back(square);
         }
@@ -118,7 +121,6 @@ Map::Map(int aMapSizeX, int aMapSizeY) {
 void Map::connectSquares(){
     for (int i = 0; i < mapSizeX; ++i) {
         for (int j = 0; j < mapSizeY; ++j) {
-
             if (i == 0 && j > 0){
                 // first column - and after first row
                 // connect to N
@@ -198,6 +200,10 @@ void Map::calculateIntegrationField()
 
     std::list<int> openList;
 
+    //ensure all nodes have max cost
+    for (int i = 0; i <= lastUID; ++i) {
+        getAt(i)->score = INT32_MAX;
+    }
     //Set goal node cost to 0 and add it to the open list
     getAt(target)->score = 0;
     openList.push_back(target);
@@ -233,6 +239,7 @@ void Map::calculateIntegrationField()
             }
         }
     }
+
     auto end = std::chrono::system_clock::now();
     auto elapsed = end - start_time_total;
     std::cout << elapsed.count() << '\n' << std::flush;
@@ -319,12 +326,12 @@ void Map::updatePath(){
 
 int Map::normaliseSpeed(int aSpeed){
 
-    int fromMin = -1000;
-    int fromMax = 1000;
+    int fromMin = -maxHeightDiff;
+    int fromMax = maxHeightDiff;
     int toMin = 1;
     int toMax = 100;
-
-    return ((aSpeed - fromMin) * (toMax - toMin)) / ((fromMax - fromMin) + toMin);
+    int result = ((aSpeed - fromMin) * (toMax - toMin)) / ((fromMax - fromMin) + toMin);
+    return result;
 }
 
 std::vector<MapSquare*> Map::getNeighbors(int i, int j){
@@ -478,6 +485,15 @@ void Map::changeSquareHeight(DataTypes::Direction direction){
         getAt(selX, selY + 1)->heights.ne = newHeightSE;
     }
 
+    for (std::pair<int, int> neighbor : getAt(getIndexInto(selX, selY))->neighbors) {
+        getAt(neighbor.first)->update();
+        // TODO we need to also update the neighbors of the neighbors
+    }
+
+    // TODO this is inefficient - we only have to do this for the squares which have actually changed
+    connectSquares();
+
+    calculateIntegrationField();
 }
 
 void Map::moveSelectedSquare(DataTypes::Direction direction) {
@@ -708,6 +724,3 @@ bool Map::isValidMapIndex(int i, int j) {
     }
     return true;
 }
-
-
-

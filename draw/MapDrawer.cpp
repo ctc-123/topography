@@ -142,6 +142,10 @@ void MapDrawer::drawMapSquare(MapSquare *mapSquare) {
     Coordinate ne(mapSquare->centre.x + 0.5, mapSquare->centre.y - 0.5, mapSquare->heights.ne);
     Coordinate sw(mapSquare->centre.x - 0.5, mapSquare->centre.y + 0.5, mapSquare->heights.sw);
     Coordinate se(mapSquare->centre.x + 0.5, mapSquare->centre.y + 0.5, mapSquare->heights.se);
+    Coordinate n(mapSquare->centre.x, mapSquare->centre.y - 0.5, mapSquare->heights.n);
+    Coordinate e(mapSquare->centre.x + 0.5, mapSquare->centre.y, mapSquare->heights.e);
+    Coordinate s(mapSquare->centre.x, mapSquare->centre.y + 0.5, mapSquare->heights.s);
+    Coordinate w(mapSquare->centre.x - 0.5, mapSquare->centre.y, mapSquare->heights.w);
 
     nw.x = (nw.x * tileSize) + offsetFromEdgeX;
     nw.y = (nw.y * tileSize) + offsetFromEdgeY;
@@ -151,18 +155,65 @@ void MapDrawer::drawMapSquare(MapSquare *mapSquare) {
     sw.y = (sw.y * tileSize) + offsetFromEdgeY;
     se.x = (se.x * tileSize) + offsetFromEdgeX;
     se.y = (se.y * tileSize) + offsetFromEdgeY;
+    n.x = (n.x * tileSize) + offsetFromEdgeX;
+    n.y = (n.y * tileSize) + offsetFromEdgeY;
+    e.x = (e.x * tileSize) + offsetFromEdgeX;
+    e.y = (e.y * tileSize) + offsetFromEdgeY;
+    s.x = (s.x * tileSize) + offsetFromEdgeX;
+    s.y = (s.y * tileSize) + offsetFromEdgeY;
+    w.x = (w.x * tileSize) + offsetFromEdgeX;
+    w.y = (w.y * tileSize) + offsetFromEdgeY;
 
     applyRotation(&ne);
     applyRotation(&nw);
     applyRotation(&se);
     applyRotation(&sw);
+    applyRotation(&n);
+    applyRotation(&e);
+    applyRotation(&s);
+    applyRotation(&w);
 
-    //fillSpace(&ne, &nw, &se, &sw);
     SDL_RenderDrawLine(renderer, nw.x, nw.y, sw.x, sw.y);
     SDL_RenderDrawLine(renderer, nw.x, nw.y, ne.x, ne.y);
     SDL_RenderDrawLine(renderer, sw.x, sw.y, se.x, se.y);
     SDL_RenderDrawLine(renderer, ne.x, ne.y, se.x, se.y);
 
+    SDL_SetRenderDrawColor (renderer , 0, 255, 255, mapColour.a);
+    /*switch (mapSquare->directionToTarget){
+        case TraversalVectors::vectorN_S :
+            SDL_RenderDrawLine(renderer, nw.x, nw.y, s.x, s.y);
+            SDL_RenderDrawLine(renderer, ne.x, ne.y, s.x, s.y);
+            break;
+        case TraversalVectors::vectorS_N :
+            SDL_RenderDrawLine(renderer, sw.x, sw.y, n.x, n.y);
+            SDL_RenderDrawLine(renderer, se.x, se.y, n.x, n.y);
+            break;
+        case TraversalVectors::vectorE_W :
+            SDL_RenderDrawLine(renderer, ne.x, ne.y, w.x, w.y);
+            SDL_RenderDrawLine(renderer, se.x, se.y, w.x, w.y);
+            break;
+        case TraversalVectors::vectorW_E :
+            SDL_RenderDrawLine(renderer, nw.x, nw.y, e.x, e.y);
+            SDL_RenderDrawLine(renderer, sw.x, sw.y, e.x, e.y);
+            break;
+        case TraversalVectors::vectorNE_SW :
+            SDL_RenderDrawLine(renderer, n.x, n.y, sw.x, sw.y);
+            SDL_RenderDrawLine(renderer, e.x, e.y, sw.x, sw.y);
+            break;
+        case TraversalVectors::vectorNW_SE:
+            SDL_RenderDrawLine(renderer, n.x, n.y, se.x, se.y);
+            SDL_RenderDrawLine(renderer, w.x, w.y, se.x, se.y);
+            break;
+        case TraversalVectors::vectorSE_NW:
+            SDL_RenderDrawLine(renderer, e.x, e.y, nw.x, nw.y);
+            SDL_RenderDrawLine(renderer, s.x, s.y, nw.x, nw.y);
+            break;
+        case TraversalVectors::vectorSW_NE:
+            SDL_RenderDrawLine(renderer, w.x, w.y, ne.x, ne.y);
+            SDL_RenderDrawLine(renderer, s.x, s.y, ne.x, ne.y);
+            break;
+    }
+*/
 
 }
 

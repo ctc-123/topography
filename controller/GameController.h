@@ -34,19 +34,25 @@ public:
     void decreaseZoom();
 
     void update();
-
     void togglePaused();
 
+
+
 private:
+    unsigned tick = 0;
+    unsigned updatePerTick = 4;
+    bool updateRequired = false;
+    DataTypes::GameState state = DataTypes::PAUSED;
     void changeSquareHeight(DataTypes::Direction direction);
     void moveMapSelection(DataTypes::Direction direction);
+    void setState(DataTypes::GameState aState);
+    void doTick();
     bool moveSelectionLeftPressed = false;
     bool moveSelectionRightPressed = false;
     bool moveSelectionUpPressed = false;
     bool moveSelectionDownPressed = false;
     bool raiseSelectionPressed = false;
     bool lowerSelectionPressed = false;
-    bool paused = false;
 
 
 };
